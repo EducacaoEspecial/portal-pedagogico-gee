@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portal GEE · Ferramentas Pedagógicas v.11:51_26-06-26</title>
+<title>Portal GEE · Ferramentas Pedagógicas v.18:40_22-07-26</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
@@ -282,15 +282,34 @@
   }
 
   body.bloqueado { overflow: hidden; }
+
+  /* ---------- SELO NOVO ---------- */
+  .novo-badge {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin-left: 7px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #FDE047;
+    color: #713F12;
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    transform: translateY(-2px);
+  }
+
 </style>
 </head>
 <body>
-
 <header class="topo">
   <span class="selo"><span class="ponto"></span>Gerência de Educação Especial</span>
   <h1 class="titulo-portal">Portal de <span class="acento">Ferramentas</span><br>Pedagógicas</h1>
   <p class="subtitulo-portal">Atividades digitais de apoio à atenção, regulação emocional, rotina e coordenação motora, pensadas para o trabalho na Educação Especial.</p>
 </header>
+
 
 <main>
   <div class="grade">
@@ -399,7 +418,7 @@
     <button class="card" data-app="sequencia-historias" style="--cor-app:#7C3AED; --cor-app-tint:#EDE9FE;">
       <div class="icone-app">🧩</div>
       <span class="tag">Organização temporal</span>
-      <h2>Sequência de Histórias</h2>
+      <h2>Sequência de Histórias <span class="novo-badge">Novo</span></h2>
       <p class="desc">O aluno organiza cenas do cotidiano na ordem correta, desenvolvendo compreensão temporal, linguagem e raciocínio lógico.</p>
       <span class="btn-abrir">Abrir atividade
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
@@ -6211,9 +6230,71 @@ modal.addEventListener('click', e => { if (e.target === modal) modal.style.displ
     .slot .cena { min-height: 124px; }
     .acao { flex: 1 1 45%; padding-inline: 10px; }
   }
+
+
+  /* BOTÃO SOBRE */
+  #btn-sobre {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    background: white;
+    border: 2px solid #E0DBF5;
+    border-radius: 40px;
+    padding: 6px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #6B7A99;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    z-index: 50;
+    transition: all 0.15s;
+  }
+  #btn-sobre:hover { background: #F5F3FF; }
+  #btn-sobre:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+  /* MODAL SOBRE */
+  #modal-sobre {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(30,30,60,0.45);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-box {
+    background: white;
+    border-radius: 24px;
+    padding: 28px 24px;
+    max-width: 380px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 40px rgba(80,100,200,0.18);
+    position: relative;
+    animation: popIn .3s ease;
+  }
+  #btn-fechar {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #6B7A99;
+  }
+  @keyframes popIn {
+    0% { transform: scale(.85); opacity: 0; }
+    60% { transform: scale(1.04); }
+    100% { transform: scale(1); opacity: 1; }
+  }
 </style>
 </head>
 <body>
+<button id="btn-sobre" type="button">ℹ️ Sobre</button>
 <div class="app">
   <header class="cabecalho">
     <div class="selo">🧩 Organização temporal</div>
@@ -6264,7 +6345,62 @@ modal.addEventListener('click', e => { if (e.target === modal) modal.style.displ
 </div>
 <div class="celebracao" id="celebracao" aria-hidden="true"></div>
 
+
+<!-- Modal Sobre -->
+<div id="modal-sobre" role="dialog" aria-modal="true" aria-labelledby="titulo-sobre" aria-hidden="true">
+  <div class="modal-box">
+    <button id="btn-fechar" type="button" aria-label="Fechar">✕</button>
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:40px;">🧩</div>
+      <h2 id="titulo-sobre" style="font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;color:#29233A;margin-top:6px;">Sequência de Histórias</h2>
+    </div>
+    <p style="font-family:'Nunito',sans-serif;font-size:13px;color:#4A5568;line-height:1.7;margin-bottom:12px;">
+      Atividade de organização temporal em que o aluno observa cenas e as coloca na ordem correta dos acontecimentos.
+    </p>
+    <p style="font-family:'Nunito',sans-serif;font-size:13px;color:#4A5568;line-height:1.7;margin-bottom:16px;">
+      Trabalha raciocínio lógico, compreensão de rotinas, atenção, linguagem, memória de trabalho e autonomia. Possui níveis com três ou quatro cenas, narração e correção imediata.
+    </p>
+    <div style="background:#F7F5FF;border-radius:14px;padding:12px 14px;margin-bottom:16px;text-align:center;">
+      <div style="font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:#6B7A99;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Créditos</div>
+      <div style="font-family:'Nunito',sans-serif;font-size:13px;color:#1A1A2E;line-height:1.9;">
+        💡 <b>Idealizado por</b><br>
+        Alamir Rodrigues Rangel Júnior<br>
+        <span style="color:#6B7A99;font-size:12px;">Aux. de Secretaria · GEE</span><br><br>
+        🤖 <b>Implementado com assistência de IA</b>
+      </div>
+    </div>
+    <div style="text-align:center;font-family:'Nunito',sans-serif;font-size:11px;color:#A0AECB;font-weight:700;letter-spacing:.5px;">
+      GEE · Gerência de Educação Especial · Seduct
+    </div>
+  </div>
+</div>
+
 <script>
+  const modalSobre = document.getElementById('modal-sobre');
+  const btnSobre = document.getElementById('btn-sobre');
+  const btnFecharSobre = document.getElementById('btn-fechar');
+
+  function abrirSobre() {
+    modalSobre.style.display = 'flex';
+    modalSobre.setAttribute('aria-hidden', 'false');
+    btnFecharSobre.focus();
+  }
+
+  function fecharSobre() {
+    modalSobre.style.display = 'none';
+    modalSobre.setAttribute('aria-hidden', 'true');
+    btnSobre.focus();
+  }
+
+  btnSobre.addEventListener('click', abrirSobre);
+  btnFecharSobre.addEventListener('click', fecharSobre);
+  modalSobre.addEventListener('click', event => {
+    if (event.target === modalSobre) fecharSobre();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && modalSobre.style.display === 'flex') fecharSobre();
+  });
+
   const HISTORIAS = {
     3: [
       {
@@ -6652,6 +6788,7 @@ modal.addEventListener('click', e => { if (e.target === modal) modal.style.displ
   });
 
   btnVoltar.addEventListener('click', fecharApp);
+
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && visualizador.classList.contains('aberto')) fecharApp();
