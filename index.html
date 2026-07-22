@@ -396,6 +396,16 @@
     </button>
 
 
+    <button class="card" data-app="sequencia-historias" style="--cor-app:#7C3AED; --cor-app-tint:#EDE9FE;">
+      <div class="icone-app">🧩</div>
+      <span class="tag">Organização temporal</span>
+      <h2>Sequência de Histórias</h2>
+      <p class="desc">O aluno organiza cenas do cotidiano na ordem correta, desenvolvendo compreensão temporal, linguagem e raciocínio lógico.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
   </div>
 </main>
 
@@ -5826,6 +5836,779 @@ modal.addEventListener('click', e => { if (e.target === modal) modal.style.displ
 </html>
 </template>
 
+
+<template id="app-sequencia-historias">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sequência de Histórias</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F2FF;
+    --surface: #FFFFFF;
+    --ink: #29233A;
+    --muted: #746A88;
+    --line: #E7DDF8;
+    --primary: #7C3AED;
+    --primary-dark: #5B21B6;
+    --primary-tint: #EDE9FE;
+    --success: #16803C;
+    --success-bg: #DCFCE7;
+    --danger: #C62828;
+    --danger-bg: #FEE2E2;
+    --warning: #9A5A00;
+    --warning-bg: #FFF3CD;
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: "Nunito", "Trebuchet MS", Arial, sans-serif;
+    background:
+      radial-gradient(circle at 12% 10%, rgba(124,58,237,.10), transparent 28%),
+      radial-gradient(circle at 88% 88%, rgba(217,70,239,.08), transparent 30%),
+      var(--bg);
+    color: var(--ink);
+  }
+
+  button { font: inherit; }
+
+  .app {
+    width: min(1080px, 100%);
+    margin: 0 auto;
+    padding: 24px clamp(14px, 3vw, 32px) 40px;
+  }
+
+  .cabecalho {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--primary-tint);
+    color: var(--primary-dark);
+    border-radius: 999px;
+    padding: 7px 13px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 46px);
+    line-height: 1.05;
+    font-weight: 900;
+    letter-spacing: -.02em;
+  }
+
+  .subtitulo {
+    max-width: 650px;
+    margin: 9px auto 0;
+    color: var(--muted);
+    font-size: clamp(14px, 2vw, 17px);
+    line-height: 1.5;
+    font-weight: 700;
+  }
+
+  .painel {
+    background: rgba(255,255,255,.94);
+    border: 2px solid var(--line);
+    border-radius: 24px;
+    box-shadow: 0 18px 45px rgba(58, 34, 92, .09);
+    overflow: hidden;
+  }
+
+  .barra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px 18px;
+    background: #FCFAFF;
+    border-bottom: 2px solid var(--line);
+  }
+
+  .niveis, .indicadores {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rotulo-barra {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  .nivel {
+    border: 2px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 8px 13px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: .15s ease;
+  }
+
+  .nivel:hover, .nivel:focus-visible { border-color: var(--primary); }
+  .nivel.ativo { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+  .indicador {
+    background: var(--primary-tint);
+    color: var(--primary-dark);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .conteudo { padding: clamp(18px, 4vw, 30px); }
+
+  .historia-topo {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .historia-titulo {
+    font-size: clamp(21px, 3.2vw, 30px);
+    font-weight: 900;
+  }
+
+  .historia-dica {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 700;
+  }
+
+  .btn-ouvir {
+    border: 2px solid var(--primary);
+    background: #fff;
+    color: var(--primary-dark);
+    border-radius: 999px;
+    min-height: 44px;
+    padding: 9px 14px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .area-titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 18px 0 10px;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .banco, .sequencia {
+    display: grid;
+    grid-template-columns: repeat(var(--colunas, 3), minmax(0, 1fr));
+    gap: clamp(8px, 2vw, 14px);
+  }
+
+  .cena {
+    min-height: 158px;
+    border: 3px solid var(--line);
+    border-radius: 20px;
+    background: #fff;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    user-select: none;
+  }
+
+  .cena:hover, .cena:focus-visible {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(91,33,182,.10);
+    outline: none;
+  }
+
+  .cena .emoji {
+    font-size: clamp(42px, 7vw, 68px);
+    line-height: 1;
+    filter: drop-shadow(0 4px 3px rgba(0,0,0,.08));
+  }
+
+  .cena .texto {
+    font-size: clamp(13px, 2vw, 16px);
+    line-height: 1.25;
+    font-weight: 900;
+  }
+
+  .cena.usada {
+    opacity: .28;
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .slot {
+    min-height: 174px;
+    border: 3px dashed #CDBBEA;
+    border-radius: 20px;
+    background: #FBF9FF;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .slot-numero {
+    position: absolute;
+    top: 8px;
+    left: 9px;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--primary-tint);
+    color: var(--primary-dark);
+    font-size: 13px;
+    font-weight: 900;
+    z-index: 2;
+  }
+
+  .slot-vazio {
+    color: #A08FB9;
+    font-weight: 900;
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.35;
+    padding: 24px 8px 8px;
+  }
+
+  .slot .cena {
+    width: 100%;
+    height: 100%;
+    min-height: 150px;
+    border-width: 2px;
+    background: #fff;
+  }
+
+  .slot.certo { border-color: var(--success); background: var(--success-bg); }
+  .slot.errado { border-color: var(--danger); background: var(--danger-bg); animation: tremer .35s ease; }
+
+  @keyframes tremer {
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-3px); }
+  }
+
+  .feedback {
+    min-height: 56px;
+    margin-top: 18px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px 16px;
+    font-weight: 900;
+    line-height: 1.35;
+    color: var(--muted);
+    background: #F7F4FB;
+  }
+
+  .feedback.sucesso { background: var(--success-bg); color: var(--success); }
+  .feedback.erro { background: var(--danger-bg); color: var(--danger); }
+  .feedback.aviso { background: var(--warning-bg); color: var(--warning); }
+
+  .acoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .acao {
+    min-height: 46px;
+    border-radius: 999px;
+    padding: 10px 17px;
+    border: 2px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    font-weight: 900;
+    cursor: pointer;
+    transition: .15s ease;
+  }
+
+  .acao:hover, .acao:focus-visible { border-color: var(--primary); transform: translateY(-1px); }
+  .acao.primaria { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .acao.primaria:hover { background: var(--primary-dark); }
+  .acao:disabled { opacity: .48; cursor: not-allowed; transform: none; }
+
+  .instrucoes {
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .celebracao {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 20;
+  }
+
+  .confete {
+    position: absolute;
+    top: -30px;
+    font-size: 26px;
+    animation: cair 1.8s ease-in forwards;
+  }
+
+  @keyframes cair {
+    to { transform: translateY(110vh) rotate(540deg); opacity: .1; }
+  }
+
+  @media (max-width: 720px) {
+    .barra { align-items: flex-start; }
+    .historia-topo { grid-template-columns: 1fr; }
+    .btn-ouvir { justify-self: start; }
+    .banco, .sequencia { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cena { min-height: 142px; }
+    .slot { min-height: 160px; }
+  }
+
+  @media (max-width: 430px) {
+    .app { padding-inline: 10px; }
+    .conteudo { padding: 15px 11px 20px; }
+    .banco, .sequencia { gap: 7px; }
+    .cena { min-height: 126px; border-radius: 16px; padding: 10px 6px; }
+    .slot { min-height: 144px; border-radius: 16px; }
+    .slot .cena { min-height: 124px; }
+    .acao { flex: 1 1 45%; padding-inline: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="cabecalho">
+    <div class="selo">🧩 Organização temporal</div>
+    <h1>Sequência de Histórias</h1>
+    <p class="subtitulo">Observe as cenas e coloque cada uma na ordem em que os acontecimentos ocorrem.</p>
+  </header>
+
+  <main class="painel">
+    <div class="barra">
+      <div class="niveis" aria-label="Escolha o nível">
+        <span class="rotulo-barra">Nível:</span>
+        <button class="nivel ativo" data-nivel="3">3 cenas</button>
+        <button class="nivel" data-nivel="4">4 cenas</button>
+      </div>
+      <div class="indicadores">
+        <span class="indicador" id="progresso">História 1</span>
+        <span class="indicador" id="placar">Acertos: 0</span>
+      </div>
+    </div>
+
+    <section class="conteudo">
+      <div class="historia-topo">
+        <div>
+          <h2 class="historia-titulo" id="historia-titulo"></h2>
+          <p class="historia-dica" id="historia-dica"></p>
+        </div>
+        <button class="btn-ouvir" id="btn-ouvir" aria-label="Ouvir instrução">🔊 Ouvir</button>
+      </div>
+
+      <h3 class="area-titulo">👀 Cenas disponíveis</h3>
+      <div class="banco" id="banco" aria-label="Cenas disponíveis"></div>
+
+      <h3 class="area-titulo">➡️ Sua sequência</h3>
+      <div class="sequencia" id="sequencia" aria-label="Sua sequência"></div>
+
+      <div class="feedback" id="feedback" aria-live="polite">Toque nas cenas na ordem correta.</div>
+
+      <div class="acoes">
+        <button class="acao" id="btn-desfazer">↩️ Desfazer</button>
+        <button class="acao" id="btn-reiniciar">🔄 Reiniciar</button>
+        <button class="acao primaria" id="btn-conferir">✅ Conferir</button>
+        <button class="acao" id="btn-proxima">🎲 Nova história</button>
+      </div>
+
+      <p class="instrucoes">Dica: toque em uma cena escolhida para devolvê-la às opções. A atividade também funciona pelo teclado.</p>
+    </section>
+  </main>
+</div>
+<div class="celebracao" id="celebracao" aria-hidden="true"></div>
+
+<script>
+  const HISTORIAS = {
+    3: [
+      {
+        titulo: 'Preparando-se para a escola',
+        dica: 'O que acontece desde a hora de acordar até sair de casa?',
+        cenas: [
+          { id: 'acordar', emoji: '🛏️', texto: 'Acordar' },
+          { id: 'escovar', emoji: '🪥', texto: 'Escovar os dentes' },
+          { id: 'escola', emoji: '🎒', texto: 'Ir para a escola' }
+        ]
+      },
+      {
+        titulo: 'Plantando uma flor',
+        dica: 'Organize as etapas para uma plantinha começar a crescer.',
+        cenas: [
+          { id: 'semente', emoji: '🌰', texto: 'Plantar a semente' },
+          { id: 'regar', emoji: '🚿', texto: 'Regar a terra' },
+          { id: 'flor', emoji: '🌱', texto: 'A planta nasce' }
+        ]
+      },
+      {
+        titulo: 'Lavando as mãos',
+        dica: 'Coloque na ordem os passos de higiene das mãos.',
+        cenas: [
+          { id: 'molhar', emoji: '💧', texto: 'Molhar as mãos' },
+          { id: 'ensaboar', emoji: '🧼', texto: 'Passar sabonete' },
+          { id: 'secar', emoji: '🧻', texto: 'Enxaguar e secar' }
+        ]
+      },
+      {
+        titulo: 'Fazendo um desenho',
+        dica: 'O que fazemos do começo até mostrar o desenho pronto?',
+        cenas: [
+          { id: 'papel', emoji: '📄', texto: 'Pegar papel e lápis' },
+          { id: 'colorir', emoji: '🖍️', texto: 'Desenhar e colorir' },
+          { id: 'mostrar', emoji: '🖼️', texto: 'Mostrar o desenho pronto' }
+        ]
+      },
+      {
+        titulo: 'Dia de chuva',
+        dica: 'Veja como se preparar antes de sair em um dia chuvoso.',
+        cenas: [
+          { id: 'chuva', emoji: '🌧️', texto: 'Perceber que está chovendo' },
+          { id: 'guarda', emoji: '☂️', texto: 'Pegar o guarda-chuva' },
+          { id: 'sair', emoji: '🚶', texto: 'Sair protegido' }
+        ]
+      },
+      {
+        titulo: 'Preparando um suco',
+        dica: 'Organize as ações até o suco ficar pronto para beber.',
+        cenas: [
+          { id: 'fruta', emoji: '🍊', texto: 'Separar a fruta' },
+          { id: 'bater', emoji: '🫗', texto: 'Bater o suco' },
+          { id: 'beber', emoji: '🥤', texto: 'Beber o suco' }
+        ]
+      }
+    ],
+    4: [
+      {
+        titulo: 'Preparando um sanduíche',
+        dica: 'Organize as etapas desde separar os ingredientes até comer.',
+        cenas: [
+          { id: 'ingredientes', emoji: '🧀', texto: 'Separar os ingredientes' },
+          { id: 'montar', emoji: '🍞', texto: 'Montar o sanduíche' },
+          { id: 'prato', emoji: '🍽️', texto: 'Colocar no prato' },
+          { id: 'comer', emoji: '😋', texto: 'Comer o sanduíche' }
+        ]
+      },
+      {
+        titulo: 'Cuidando da mochila',
+        dica: 'O que fazer para deixar a mochila pronta para o dia seguinte?',
+        cenas: [
+          { id: 'horario', emoji: '📅', texto: 'Consultar o horário' },
+          { id: 'materiais', emoji: '📚', texto: 'Separar os materiais' },
+          { id: 'guardar', emoji: '🎒', texto: 'Guardar na mochila' },
+          { id: 'fechar', emoji: '✅', texto: 'Fechar e conferir' }
+        ]
+      },
+      {
+        titulo: 'Tomando banho',
+        dica: 'Coloque em ordem as ações de cuidado pessoal.',
+        cenas: [
+          { id: 'chuveiro', emoji: '🚿', texto: 'Ligar o chuveiro' },
+          { id: 'lavar', emoji: '🧴', texto: 'Lavar o corpo' },
+          { id: 'enxaguar', emoji: '💦', texto: 'Enxaguar' },
+          { id: 'toalha', emoji: '🧖', texto: 'Secar-se com a toalha' }
+        ]
+      },
+      {
+        titulo: 'Fazendo pipoca',
+        dica: 'Organize as cenas até a pipoca ficar pronta.',
+        cenas: [
+          { id: 'milho', emoji: '🌽', texto: 'Separar o milho' },
+          { id: 'panela', emoji: '🍳', texto: 'Colocar na panela' },
+          { id: 'estourar', emoji: '✨', texto: 'Esperar estourar' },
+          { id: 'pipoca', emoji: '🍿', texto: 'Servir a pipoca' }
+        ]
+      },
+      {
+        titulo: 'Organizando o quarto',
+        dica: 'Qual é uma boa sequência para deixar o quarto arrumado?',
+        cenas: [
+          { id: 'brinquedos', emoji: '🧸', texto: 'Guardar os brinquedos' },
+          { id: 'roupas', emoji: '👕', texto: 'Guardar as roupas' },
+          { id: 'cama', emoji: '🛏️', texto: 'Arrumar a cama' },
+          { id: 'pronto', emoji: '✨', texto: 'Conferir o quarto' }
+        ]
+      },
+      {
+        titulo: 'Indo à biblioteca',
+        dica: 'Organize a visita à biblioteca do começo ao fim.',
+        cenas: [
+          { id: 'chegar', emoji: '🏫', texto: 'Chegar à biblioteca' },
+          { id: 'escolher', emoji: '🔎', texto: 'Escolher um livro' },
+          { id: 'ler', emoji: '📖', texto: 'Ler com atenção' },
+          { id: 'devolver', emoji: '📚', texto: 'Guardar ou devolver' }
+        ]
+      }
+    ]
+  };
+
+  let nivel = 3;
+  let historiaAtual = null;
+  let indiceHistoria = -1;
+  let ordemEscolhida = [];
+  let acertos = 0;
+  let bloqueado = false;
+
+  const bancoEl = document.getElementById('banco');
+  const sequenciaEl = document.getElementById('sequencia');
+  const tituloEl = document.getElementById('historia-titulo');
+  const dicaEl = document.getElementById('historia-dica');
+  const feedbackEl = document.getElementById('feedback');
+  const progressoEl = document.getElementById('progresso');
+  const placarEl = document.getElementById('placar');
+  const conferirBtn = document.getElementById('btn-conferir');
+
+  function embaralhar(lista) {
+    const copia = [...lista];
+    for (let i = copia.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia;
+  }
+
+  function falar(texto) {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const fala = new SpeechSynthesisUtterance(texto);
+    fala.lang = 'pt-BR';
+    fala.rate = .9;
+    const vozes = speechSynthesis.getVoices();
+    const vozPt = vozes.find(voz => voz.lang && voz.lang.toLowerCase().startsWith('pt'));
+    if (vozPt) fala.voice = vozPt;
+    speechSynthesis.speak(fala);
+  }
+
+  function narrarInstrucao() {
+    if (!historiaAtual) return;
+    falar(historiaAtual.titulo + '. ' + historiaAtual.dica + ' Toque nas cenas na ordem correta.');
+  }
+
+  function novaHistoria() {
+    const historias = HISTORIAS[nivel];
+    let novoIndice = Math.floor(Math.random() * historias.length);
+    if (historias.length > 1 && novoIndice === indiceHistoria) {
+      novoIndice = (novoIndice + 1) % historias.length;
+    }
+    indiceHistoria = novoIndice;
+    historiaAtual = historias[indiceHistoria];
+    ordemEscolhida = [];
+    bloqueado = false;
+    conferirBtn.disabled = false;
+    feedback('Toque nas cenas na ordem correta.', '');
+    renderizar();
+    setTimeout(narrarInstrucao, 300);
+  }
+
+  function renderizar() {
+    tituloEl.textContent = historiaAtual.titulo;
+    dicaEl.textContent = historiaAtual.dica;
+    progressoEl.textContent = nivel + ' cenas · História ' + (indiceHistoria + 1) + '/' + HISTORIAS[nivel].length;
+    placarEl.textContent = 'Acertos: ' + acertos;
+    bancoEl.style.setProperty('--colunas', nivel);
+    sequenciaEl.style.setProperty('--colunas', nivel);
+
+    const embaralhadas = historiaAtual.cenasEmbaralhadas || embaralhar(historiaAtual.cenas);
+    historiaAtual.cenasEmbaralhadas = embaralhadas;
+
+    bancoEl.innerHTML = '';
+    embaralhadas.forEach(cena => {
+      const usada = ordemEscolhida.some(item => item.id === cena.id);
+      const botao = criarCena(cena, () => selecionarCena(cena));
+      if (usada) {
+        botao.classList.add('usada');
+        botao.disabled = true;
+        botao.setAttribute('aria-disabled', 'true');
+      }
+      bancoEl.appendChild(botao);
+    });
+
+    sequenciaEl.innerHTML = '';
+    for (let i = 0; i < nivel; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.dataset.indice = i;
+      slot.innerHTML = '<span class="slot-numero">' + (i + 1) + '</span>';
+      if (ordemEscolhida[i]) {
+        const cena = criarCena(ordemEscolhida[i], () => removerCena(i));
+        cena.setAttribute('aria-label', ordemEscolhida[i].texto + '. Toque para remover da sequência.');
+        slot.appendChild(cena);
+      } else {
+        const vazio = document.createElement('span');
+        vazio.className = 'slot-vazio';
+        vazio.textContent = i === 0 ? 'Começa aqui' : 'Próxima cena';
+        slot.appendChild(vazio);
+      }
+      sequenciaEl.appendChild(slot);
+    }
+  }
+
+  function criarCena(cena, acao) {
+    const botao = document.createElement('button');
+    botao.className = 'cena';
+    botao.type = 'button';
+    botao.innerHTML = '<span class="emoji" aria-hidden="true">' + cena.emoji + '</span><span class="texto">' + cena.texto + '</span>';
+    botao.setAttribute('aria-label', cena.texto);
+    botao.addEventListener('click', acao);
+    return botao;
+  }
+
+  function selecionarCena(cena) {
+    if (bloqueado || ordemEscolhida.length >= nivel) return;
+    ordemEscolhida.push(cena);
+    falar(cena.texto);
+    feedback(ordemEscolhida.length === nivel ? 'Sequência completa. Agora toque em Conferir.' : 'Muito bem. Escolha a próxima cena.', '');
+    renderizar();
+  }
+
+  function removerCena(indice) {
+    if (bloqueado) return;
+    ordemEscolhida.splice(indice, 1);
+    feedback('Cena removida. Continue organizando.', '');
+    renderizar();
+  }
+
+  function desfazer() {
+    if (bloqueado || ordemEscolhida.length === 0) return;
+    ordemEscolhida.pop();
+    feedback('Última escolha desfeita.', '');
+    renderizar();
+  }
+
+  function reiniciar() {
+    if (bloqueado) bloqueado = false;
+    ordemEscolhida = [];
+    conferirBtn.disabled = false;
+    feedback('A sequência foi reiniciada.', '');
+    renderizar();
+  }
+
+  function conferir() {
+    if (ordemEscolhida.length < nivel) {
+      feedback('Ainda faltam ' + (nivel - ordemEscolhida.length) + ' cena(s). Complete a sequência.', 'aviso');
+      falar('Complete todas as cenas antes de conferir.');
+      return;
+    }
+
+    const correta = ordemEscolhida.every((cena, indice) => cena.id === historiaAtual.cenas[indice].id);
+    const slots = [...sequenciaEl.querySelectorAll('.slot')];
+
+    if (correta) {
+      bloqueado = true;
+      conferirBtn.disabled = true;
+      acertos++;
+      placarEl.textContent = 'Acertos: ' + acertos;
+      slots.forEach(slot => slot.classList.add('certo'));
+      feedback('🎉 Parabéns! A história está na ordem correta!', 'sucesso');
+      falar('Parabéns! A história está na ordem correta.');
+      celebrar();
+    } else {
+      ordemEscolhida.forEach((cena, indice) => {
+        slots[indice].classList.add(cena.id === historiaAtual.cenas[indice].id ? 'certo' : 'errado');
+      });
+      feedback('Quase! As posições verdes estão certas. Ajuste as outras cenas e tente novamente.', 'erro');
+      falar('Quase. Observe as cenas e tente novamente.');
+      setTimeout(() => slots.forEach(slot => slot.classList.remove('certo', 'errado')), 1700);
+    }
+  }
+
+  function feedback(mensagem, tipo) {
+    feedbackEl.textContent = mensagem;
+    feedbackEl.className = 'feedback' + (tipo ? ' ' + tipo : '');
+  }
+
+  function celebrar() {
+    const area = document.getElementById('celebracao');
+    area.innerHTML = '';
+    const simbolos = ['⭐', '🎉', '✨', '🌟', '👏'];
+    for (let i = 0; i < 22; i++) {
+      const item = document.createElement('span');
+      item.className = 'confete';
+      item.textContent = simbolos[i % simbolos.length];
+      item.style.left = Math.random() * 96 + '%';
+      item.style.animationDelay = Math.random() * .45 + 's';
+      item.style.animationDuration = (1.4 + Math.random() * .9) + 's';
+      area.appendChild(item);
+    }
+    setTimeout(() => area.innerHTML = '', 2700);
+  }
+
+  document.querySelectorAll('.nivel').forEach(botao => {
+    botao.addEventListener('click', () => {
+      nivel = Number(botao.dataset.nivel);
+      document.querySelectorAll('.nivel').forEach(item => item.classList.toggle('ativo', item === botao));
+      indiceHistoria = -1;
+      acertos = 0;
+      HISTORIAS[nivel].forEach(historia => delete historia.cenasEmbaralhadas);
+      novaHistoria();
+    });
+  });
+
+  document.getElementById('btn-ouvir').addEventListener('click', narrarInstrucao);
+  document.getElementById('btn-desfazer').addEventListener('click', desfazer);
+  document.getElementById('btn-reiniciar').addEventListener('click', reiniciar);
+  document.getElementById('btn-conferir').addEventListener('click', conferir);
+  document.getElementById('btn-proxima').addEventListener('click', () => {
+    if (historiaAtual) delete historiaAtual.cenasEmbaralhadas;
+    novaHistoria();
+  });
+
+  if ('speechSynthesis' in window) {
+    speechSynthesis.getVoices();
+    speechSynthesis.addEventListener('voiceschanged', () => speechSynthesis.getVoices());
+  }
+
+  novaHistoria();
+</script>
+</body>
+</html>
+</template>
+
+
 <script>
   const TITULOS = {
     'categorizar-objetos': 'Categorizar Objetos',
@@ -5838,6 +6621,7 @@ modal.addEventListener('click', e => { if (e.target === modal) modal.style.displ
     'reconhecimento-horas': 'Reconhecimento de Horas',
     'comunicacao-alternativa': 'Comunicação Alternativa',
     'pareamento-som-imagem': 'Pareamento Som-Imagem',
+    'sequencia-historias': 'Sequência de Histórias',
   };
 
   const visualizador = document.getElementById('visualizador');
