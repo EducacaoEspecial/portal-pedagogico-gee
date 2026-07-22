@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portal GEE · Ferramentas Pedagógicas v.18:40_22-07-26</title>
+<title>Portal GEE · Ferramentas Pedagógicas v.19:08_22-07-26</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
@@ -221,6 +221,27 @@
 
   footer.rodape strong { color: var(--ink); }
 
+  .contador-acessos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--brand-dark);
+  }
+
+  .contador-acessos .icone-contador {
+    font-size: 15px;
+  }
+
+  #numero-acessos {
+    min-width: 2ch;
+    font-variant-numeric: tabular-nums;
+  }
+
   @media (max-width: 480px) {
     header.topo { padding: 32px 18px 28px; }
     main { padding: 4px 16px 48px; }
@@ -429,7 +450,11 @@
 </main>
 
 <footer class="rodape">
-  <strong>GEE</strong> · Gerência de Educação Especial · Seduct
+  <div><strong>GEE</strong> · Gerência de Educação Especial · Seduct</div>
+  <div class="contador-acessos" title="Total de carregamentos registrados pelo contador">
+    <span class="icone-contador" aria-hidden="true">👁️</span>
+    <span>Este portal já recebeu <span id="numero-acessos" aria-live="polite">...</span> acessos</span>
+  </div>
 </footer>
 
 <!-- ---------- VISUALIZADOR ---------- -->
@@ -6789,6 +6814,34 @@ modal.addEventListener('click', e => { if (e.target === modal) modal.style.displ
 
   btnVoltar.addEventListener('click', fecharApp);
 
+  // Contador público de acessos para páginas estáticas.
+  // Cada carregamento completo do portal acrescenta um acesso.
+  async function atualizarContadorAcessos() {
+    const numeroAcessos = document.getElementById('numero-acessos');
+    if (!numeroAcessos) return;
+
+    const endpoint = 'https://api.counterapi.dev/v1/portal-gee-ferramentas-pedagogicas/acessos/up';
+
+    try {
+      const resposta = await fetch(endpoint, { cache: 'no-store' });
+      if (!resposta.ok) throw new Error('Falha ao consultar o contador');
+
+      const dados = await resposta.json();
+      const total = Number(dados.count ?? dados.value);
+      if (!Number.isFinite(total)) throw new Error('Resposta inválida do contador');
+
+      numeroAcessos.textContent = total.toLocaleString('pt-BR');
+    } catch (erro) {
+      console.warn('Contador de acessos indisponível:', erro);
+      numeroAcessos.textContent = '—';
+      numeroAcessos.parentElement.setAttribute(
+        'title',
+        'O contador está temporariamente indisponível.'
+      );
+    }
+  }
+
+  atualizarContadorAcessos();
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && visualizador.classList.contains('aberto')) fecharApp();
