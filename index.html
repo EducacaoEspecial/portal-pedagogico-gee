@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portal GEE · Ferramentas Pedagógicas v.18:17_24-07-26</title>
+<title>Portal GEE · Ferramentas Pedagógicas v.19:08_22-07-26</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
@@ -102,6 +102,58 @@
     max-width: 1080px;
     margin: 0 auto;
     padding: 8px 24px 64px;
+  }
+
+  /* ---------- FILTRO DE GRUPOS ---------- */
+  .filtro-bar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 1080px;
+    margin: 0 auto 32px;
+    padding: 0 24px;
+  }
+
+  .filtro {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .filtro:hover { border-color: var(--brand); color: var(--brand-dark); }
+
+  .filtro.ativo {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+  }
+
+  /* ---------- GRUPOS DE FERRAMENTAS ---------- */
+  .grupo { margin-bottom: 40px; }
+  .grupo:last-child { margin-bottom: 0; }
+  .grupo.oculto { display: none; }
+
+  .grupo-titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px 2px;
   }
 
   .grade {
@@ -331,120 +383,162 @@
   <p class="subtitulo-portal">Atividades digitais de apoio à atenção, regulação emocional, rotina e coordenação motora, pensadas para o trabalho na Educação Especial.</p>
 </header>
 
+<div class="filtro-bar" role="tablist" aria-label="Filtrar ferramentas por grupo">
+  <button class="filtro ativo" data-filtro="todos" type="button">Todos</button>
+  <button class="filtro" data-filtro="comunicacao" type="button">💬 Comunicação</button>
+  <button class="filtro" data-filtro="emocoes" type="button">🌱 Emoções e Regulação</button>
+  <button class="filtro" data-filtro="rotina" type="button">🗓️ Rotina e Organização</button>
+  <button class="filtro" data-filtro="cognicao" type="button">🧠 Cognição e Atenção</button>
+  <button class="filtro" data-filtro="motora" type="button">🎯 Coordenação Motora</button>
+</div>
+
 <main>
-  <div class="grade">
 
-    <button class="card" data-app="categorizar-objetos" style="--cor-app:#D98A2B; --cor-app-tint:#FBEBD3;">
-      <div class="icone-app">🗂️</div>
-      <span class="tag">Cognição</span>
-      <h2>Categorizar Objetos</h2>
-      <p class="desc">O aluno arrasta cada item até o grupo correto, exercitando classificação, atenção e raciocínio lógico.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+  <section class="grupo" data-grupo="comunicacao">
+    <h3 class="grupo-titulo">💬 Comunicação</h3>
+    <div class="grade">
 
-    <button class="card" data-app="minha-rotina" style="--cor-app:#3D8FD9; --cor-app-tint:#DEEDFB;">
-      <div class="icone-app">🕐</div>
-      <span class="tag">Rotina</span>
-      <h2>Minha Rotina</h2>
-      <p class="desc">Mostra visualmente o que vem a seguir no dia do aluno, dando previsibilidade e reduzindo ansiedade.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+      <button class="card" data-app="alfabeto-libras" style="--cor-app:#0D9488; --cor-app-tint:#D4F5F1;">
+        <div class="icone-app">🤟</div>
+        <span class="tag">Comunicação</span>
+        <h2>Alfabeto Manual - Libras</h2>
+        <p class="desc">Apresenta o alfabeto manual em Libras, ajudando o aluno a reconhecer e praticar a datilologia letra por letra.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
 
-    <button class="card" data-app="rastreamento-visual" style="--cor-app:#5B6FD9; --cor-app-tint:#E4E7FB;">
-      <div class="icone-app">👁️</div>
-      <span class="tag">Atenção visual</span>
-      <h2>Rastreamento Visual</h2>
-      <p class="desc">O aluno acompanha uma bola em movimento com os olhos, trabalhando rastreamento ocular e foco.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+      <button class="card" data-app="comunicacao-alternativa" style="--cor-app:#D6336C; --cor-app-tint:#FBE4ED;">
+        <div class="icone-app">🗨️</div>
+        <span class="tag">CAA</span>
+        <h2>Comunicação Alternativa</h2>
+        <p class="desc">Prancha de pictogramas para montar frases simples, que são lidas em voz alta, dando voz a alunos não-verbais ou com fala limitada.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
 
-    <button class="card" data-app="respiracao-guiada" style="--cor-app:#5C8AC4; --cor-app-tint:#E5EEF9;">
-      <div class="icone-app">🫧</div>
-      <span class="tag">Regulação</span>
-      <h2>Respiração Guiada</h2>
-      <p class="desc">Um círculo que expande e contrai no ritmo certo, ajudando o aluno a respirar com calma e se regular.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+      <button class="card" data-app="pareamento-som-imagem" style="--cor-app:#16A34A; --cor-app-tint:#DCFCE7;">
+        <div class="icone-app">🔊</div>
+        <span class="tag">Linguagem</span>
+        <h2>Pareamento Som-Imagem</h2>
+        <p class="desc">O aplicativo fala uma palavra e o aluno toca na imagem correspondente, treinando discriminação auditiva e atenção.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
 
-    <button class="card" data-app="termometro-emocoes-offline" style="--cor-app:#7B5FBF; --cor-app-tint:#EBE4FA;">
-      <div class="icone-app">🌡️</div>
-      <span class="tag">Emoções</span>
-      <h2>Termômetro de Emoções</h2>
-      <p class="desc">Ajuda o aluno a identificar e nomear como está se sentindo, em uma escala visual simples.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+    </div>
+  </section>
 
-    <button class="card" data-app="pega-o-macaco" style="--cor-app:#FFB800; --cor-app-tint:#FFF0C0;">
-      <div class="icone-app">🐒</div>
-      <span class="tag">Coordenação motora</span>
-      <h2>Pega o Macaco!</h2>
-      <p class="desc">O aluno clica no macaco antes que ele fuja, treinando coordenação motora fina e atenção visual.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+  <section class="grupo" data-grupo="emocoes">
+    <h3 class="grupo-titulo">🌱 Emoções e Regulação</h3>
+    <div class="grade">
 
-    <button class="card" data-app="alfabeto-libras" style="--cor-app:#0D9488; --cor-app-tint:#D4F5F1;">
-      <div class="icone-app">🤟</div>
-      <span class="tag">Comunicação</span>
-      <h2>Alfabeto Manual - Libras</h2>
-      <p class="desc">Apresenta o alfabeto manual em Libras, ajudando o aluno a reconhecer e praticar a datilologia letra por letra.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+      <button class="card" data-app="respiracao-guiada" style="--cor-app:#5C8AC4; --cor-app-tint:#E5EEF9;">
+        <div class="icone-app">🫧</div>
+        <span class="tag">Regulação</span>
+        <h2>Respiração Guiada</h2>
+        <p class="desc">Um círculo que expande e contrai no ritmo certo, ajudando o aluno a respirar com calma e se regular.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
 
-    <button class="card" data-app="reconhecimento-horas" style="--cor-app:#C2410C; --cor-app-tint:#FDE3D3;">
-      <div class="icone-app">🕐</div>
-      <span class="tag">Cognição</span>
-      <h2>Reconhecimento de Horas</h2>
-      <p class="desc">Relógio analógico interativo: o aluno arrasta os ponteiros para marcar a hora, em modo livre ou desafio.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+      <button class="card" data-app="termometro-emocoes-offline" style="--cor-app:#7B5FBF; --cor-app-tint:#EBE4FA;">
+        <div class="icone-app">🌡️</div>
+        <span class="tag">Emoções</span>
+        <h2>Termômetro de Emoções</h2>
+        <p class="desc">Ajuda o aluno a identificar e nomear como está se sentindo, em uma escala visual simples.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
 
-    <button class="card" data-app="comunicacao-alternativa" style="--cor-app:#D6336C; --cor-app-tint:#FBE4ED;">
-      <div class="icone-app">🗨️</div>
-      <span class="tag">CAA</span>
-      <h2>Comunicação Alternativa</h2>
-      <p class="desc">Prancha de pictogramas para montar frases simples, que são lidas em voz alta, dando voz a alunos não-verbais ou com fala limitada.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+    </div>
+  </section>
 
-    <button class="card" data-app="pareamento-som-imagem" style="--cor-app:#16A34A; --cor-app-tint:#DCFCE7;">
-      <div class="icone-app">🔊</div>
-      <span class="tag">Linguagem</span>
-      <h2>Pareamento Som-Imagem</h2>
-      <p class="desc">O aplicativo fala uma palavra e o aluno toca na imagem correspondente, treinando discriminação auditiva e atenção.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+  <section class="grupo" data-grupo="rotina">
+    <h3 class="grupo-titulo">🗓️ Rotina e Organização</h3>
+    <div class="grade">
 
-    <button class="card" data-app="sequencia-historias" style="--cor-app:#7C3AED; --cor-app-tint:#EDE9FE;">
-      <div class="icone-app">🧩</div>
-      <span class="tag">Organização temporal</span>
-      <h2>Sequência de Histórias <span class="novo-badge">Novo</span></h2>
-      <p class="desc">O aluno organiza cenas do cotidiano na ordem correta, desenvolvendo compreensão temporal, linguagem e raciocínio lógico.</p>
-      <span class="btn-abrir">Abrir atividade
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </span>
-    </button>
+      <button class="card" data-app="minha-rotina" style="--cor-app:#3D8FD9; --cor-app-tint:#DEEDFB;">
+        <div class="icone-app">🕐</div>
+        <span class="tag">Rotina</span>
+        <h2>Minha Rotina</h2>
+        <p class="desc">Mostra visualmente o que vem a seguir no dia do aluno, dando previsibilidade e reduzindo ansiedade.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
 
-  </div>
+      <button class="card" data-app="sequencia-historias" style="--cor-app:#7C3AED; --cor-app-tint:#EDE9FE;">
+        <div class="icone-app">🧩</div>
+        <span class="tag">Organização temporal</span>
+        <h2>Sequência de Histórias <span class="novo-badge">Novo</span></h2>
+        <p class="desc">O aluno organiza cenas do cotidiano na ordem correta, desenvolvendo compreensão temporal, linguagem e raciocínio lógico.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
+
+    </div>
+  </section>
+
+  <section class="grupo" data-grupo="cognicao">
+    <h3 class="grupo-titulo">🧠 Cognição e Atenção</h3>
+    <div class="grade">
+
+      <button class="card" data-app="categorizar-objetos" style="--cor-app:#D98A2B; --cor-app-tint:#FBEBD3;">
+        <div class="icone-app">🗂️</div>
+        <span class="tag">Cognição</span>
+        <h2>Categorizar Objetos</h2>
+        <p class="desc">O aluno arrasta cada item até o grupo correto, exercitando classificação, atenção e raciocínio lógico.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
+
+      <button class="card" data-app="reconhecimento-horas" style="--cor-app:#C2410C; --cor-app-tint:#FDE3D3;">
+        <div class="icone-app">🕐</div>
+        <span class="tag">Cognição</span>
+        <h2>Reconhecimento de Horas</h2>
+        <p class="desc">Relógio analógico interativo: o aluno arrasta os ponteiros para marcar a hora, em modo livre ou desafio.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
+
+      <button class="card" data-app="rastreamento-visual" style="--cor-app:#5B6FD9; --cor-app-tint:#E4E7FB;">
+        <div class="icone-app">👁️</div>
+        <span class="tag">Atenção visual</span>
+        <h2>Rastreamento Visual</h2>
+        <p class="desc">O aluno acompanha uma bola em movimento com os olhos, trabalhando rastreamento ocular e foco.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
+
+    </div>
+  </section>
+
+  <section class="grupo" data-grupo="motora">
+    <h3 class="grupo-titulo">🎯 Coordenação Motora</h3>
+    <div class="grade">
+
+      <button class="card" data-app="pega-o-macaco" style="--cor-app:#FFB800; --cor-app-tint:#FFF0C0;">
+        <div class="icone-app">🐒</div>
+        <span class="tag">Coordenação motora</span>
+        <h2>Pega o Macaco!</h2>
+        <p class="desc">O aluno clica no macaco antes que ele fuja, treinando coordenação motora fina e atenção visual.</p>
+        <span class="btn-abrir">Abrir atividade
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
+
+    </div>
+  </section>
+
 </main>
 
 <footer class="rodape">
@@ -510,6 +604,20 @@
 
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', () => abrirApp(card.dataset.app));
+  });
+
+  // Filtro por grupo de ferramentas
+  const botoesFiltro = document.querySelectorAll('.filtro');
+  const grupos = document.querySelectorAll('.grupo');
+
+  botoesFiltro.forEach(botao => {
+    botao.addEventListener('click', () => {
+      botoesFiltro.forEach(b => b.classList.toggle('ativo', b === botao));
+      const alvo = botao.dataset.filtro;
+      grupos.forEach(grupo => {
+        grupo.classList.toggle('oculto', alvo !== 'todos' && grupo.dataset.grupo !== alvo);
+      });
+    });
   });
 
   btnVoltar.addEventListener('click', fecharApp);
