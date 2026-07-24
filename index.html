@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portal GEE · Ferramentas Pedagógicas v.19:08_22-07-26</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #FBF8F2;
+    --surface:    #FFFFFF;
+    --ink:        #2A2620;
+    --muted:      #847A68;
+    --line:       #EBE3D3;
+    --brand:      #2E7D6B;
+    --brand-dark: #235F52;
+    --brand-tint: #E3F0EC;
+    --radius-lg:  22px;
+    --radius-md:  16px;
+  }
+
+  html, body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, #E3D9BE 1.4px, transparent 1.4px);
+    background-size: 26px 26px;
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  a { text-decoration: none; color: inherit; }
+  button { font-family: inherit; }
+
+  /* ---------- HEADER ---------- */
+  header.topo {
+    position: relative;
+    z-index: 1;
+    padding: 40px 24px 36px;
+    text-align: center;
+  }
+
+  .selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--brand-tint);
+    color: var(--brand-dark);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
+
+  .selo .ponto {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--brand);
+  }
+
+  h1.titulo-portal {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: clamp(32px, 5.2vw, 50px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+
+  h1.titulo-portal .acento { color: var(--brand); }
+
+  .subtitulo-portal {
+    margin: 14px auto 0;
+    max-width: 540px;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* ---------- GRID ---------- */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 8px 24px 64px;
+  }
+
+  .grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 26px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: var(--cor-app, var(--brand));
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 32px -12px rgba(40, 35, 20, 0.18);
+    border-color: var(--cor-app, var(--brand));
+  }
+
+  .card:focus-visible {
+    outline: 3px solid var(--cor-app, var(--brand));
+    outline-offset: 2px;
+  }
+
+  .icone-app {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    background: var(--cor-app-tint, var(--brand-tint));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    line-height: 1;
+  }
+
+  .card h2 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 19px;
+    color: var(--ink);
+  }
+
+  .card .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--cor-app, var(--brand));
+    background: var(--cor-app-tint, var(--brand-tint));
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: -4px;
+    align-self: flex-start;
+  }
+
+  .card p.desc {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+    flex-grow: 1;
+  }
+
+  .btn-abrir {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 4px;
+    padding: 11px 0;
+    width: 100%;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: #fff;
+    background: var(--cor-app, var(--brand));
+    border-radius: 999px;
+    transition: filter 0.15s, transform 0.1s;
+    pointer-events: none;
+  }
+
+  .card:hover .btn-abrir { filter: brightness(1.07); }
+
+  .btn-abrir svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ---------- FOOTER ---------- */
+  footer.rodape {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 28px 24px 40px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+
+  footer.rodape strong { color: var(--ink); }
+
+  .contador-acessos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--brand-dark);
+  }
+
+  .contador-acessos .icone-contador {
+    font-size: 15px;
+  }
+
+  #numero-acessos {
+    min-width: 2ch;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 480px) {
+    header.topo { padding: 32px 18px 28px; }
+    main { padding: 4px 16px 48px; }
+  }
+
+  /* ---------- VISUALIZADOR (IFRAME) ---------- */
+  #visualizador {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: var(--bg);
+    display: none;
+    flex-direction: column;
+  }
+
+  #visualizador.aberto { display: flex; }
+
+  .barra-visualizador {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .btn-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg);
+    border: 2px solid var(--line);
+    color: var(--ink);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .btn-voltar:hover { border-color: var(--brand); color: var(--brand-dark); }
+  .btn-voltar svg { width: 14px; height: 14px; }
+
+  #titulo-visualizador {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  #frame-app {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  body.bloqueado { overflow: hidden; }
+
+  /* ---------- SELO NOVO ---------- */
+  .novo-badge {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin-left: 7px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #FDE047;
+    color: #713F12;
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    transform: translateY(-2px);
+  }
+
+</style>
+</head>
+<body>
+<header class="topo">
+  <span class="selo"><span class="ponto"></span>Gerência de Educação Especial</span>
+  <h1 class="titulo-portal">Portal de <span class="acento">Ferramentas</span><br>Pedagógicas</h1>
+  <p class="subtitulo-portal">Atividades digitais de apoio à atenção, regulação emocional, rotina e coordenação motora, pensadas para o trabalho na Educação Especial.</p>
+</header>
+
+<main>
+  <div class="grade">
+
+    <button class="card" data-app="categorizar-objetos" style="--cor-app:#D98A2B; --cor-app-tint:#FBEBD3;">
+      <div class="icone-app">🗂️</div>
+      <span class="tag">Cognição</span>
+      <h2>Categorizar Objetos</h2>
+      <p class="desc">O aluno arrasta cada item até o grupo correto, exercitando classificação, atenção e raciocínio lógico.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+    <button class="card" data-app="minha-rotina" style="--cor-app:#3D8FD9; --cor-app-tint:#DEEDFB;">
+      <div class="icone-app">🕐</div>
+      <span class="tag">Rotina</span>
+      <h2>Minha Rotina</h2>
+      <p class="desc">Mostra visualmente o que vem a seguir no dia do aluno, dando previsibilidade e reduzindo ansiedade.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+    <button class="card" data-app="rastreamento-visual" style="--cor-app:#5B6FD9; --cor-app-tint:#E4E7FB;">
+      <div class="icone-app">👁️</div>
+      <span class="tag">Atenção visual</span>
+      <h2>Rastreamento Visual</h2>
+      <p class="desc">O aluno acompanha uma bola em movimento com os olhos, trabalhando rastreamento ocular e foco.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+    <button class="card" data-app="respiracao-guiada" style="--cor-app:#5C8AC4; --cor-app-tint:#E5EEF9;">
+      <div class="icone-app">🫧</div>
+      <span class="tag">Regulação</span>
+      <h2>Respiração Guiada</h2>
+      <p class="desc">Um círculo que expande e contrai no ritmo certo, ajudando o aluno a respirar com calma e se regular.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+    <button class="card" data-app="termometro-emocoes-offline" style="--cor-app:#7B5FBF; --cor-app-tint:#EBE4FA;">
+      <div class="icone-app">🌡️</div>
+      <span class="tag">Emoções</span>
+      <h2>Termômetro de Emoções</h2>
+      <p class="desc">Ajuda o aluno a identificar e nomear como está se sentindo, em uma escala visual simples.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+    <button class="card" data-app="pega-o-macaco" style="--cor-app:#FFB800; --cor-app-tint:#FFF0C0;">
+      <div class="icone-app">🐒</div>
+      <span class="tag">Coordenação motora</span>
+      <h2>Pega o Macaco!</h2>
+      <p class="desc">O aluno clica no macaco antes que ele fuja, treinando coordenação motora fina e atenção visual.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+    <button class="card" data-app="alfabeto-libras" style="--cor-app:#0D9488; --cor-app-tint:#D4F5F1;">
+      <div class="icone-app">🤟</div>
+      <span class="tag">Comunicação</span>
+      <h2>Alfabeto Manual - Libras</h2>
+      <p class="desc">Apresenta o alfabeto manual em Libras, ajudando o aluno a reconhecer e praticar a datilologia letra por letra.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+    <button class="card" data-app="reconhecimento-horas" style="--cor-app:#C2410C; --cor-app-tint:#FDE3D3;">
+      <div class="icone-app">🕐</div>
+      <span class="tag">Cognição</span>
+      <h2>Reconhecimento de Horas</h2>
+      <p class="desc">Relógio analógico interativo: o aluno arrasta os ponteiros para marcar a hora, em modo livre ou desafio.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+    <button class="card" data-app="comunicacao-alternativa" style="--cor-app:#D6336C; --cor-app-tint:#FBE4ED;">
+      <div class="icone-app">🗨️</div>
+      <span class="tag">CAA</span>
+      <h2>Comunicação Alternativa</h2>
+      <p class="desc">Prancha de pictogramas para montar frases simples, que são lidas em voz alta, dando voz a alunos não-verbais ou com fala limitada.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+    <button class="card" data-app="pareamento-som-imagem" style="--cor-app:#16A34A; --cor-app-tint:#DCFCE7;">
+      <div class="icone-app">🔊</div>
+      <span class="tag">Linguagem</span>
+      <h2>Pareamento Som-Imagem</h2>
+      <p class="desc">O aplicativo fala uma palavra e o aluno toca na imagem correspondente, treinando discriminação auditiva e atenção.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+    <button class="card" data-app="sequencia-historias" style="--cor-app:#7C3AED; --cor-app-tint:#EDE9FE;">
+      <div class="icone-app">🧩</div>
+      <span class="tag">Organização temporal</span>
+      <h2>Sequência de Histórias <span class="novo-badge">Novo</span></h2>
+      <p class="desc">O aluno organiza cenas do cotidiano na ordem correta, desenvolvendo compreensão temporal, linguagem e raciocínio lógico.</p>
+      <span class="btn-abrir">Abrir atividade
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+
+  </div>
+</main>
+
+<footer class="rodape">
+  <div><strong>GEE</strong> · Gerência de Educação Especial · Seduct</div>
+  <div class="contador-acessos" title="Total de carregamentos registrados pelo contador">
+    <span class="icone-contador" aria-hidden="true">👁️</span>
+    <span>Este portal já recebeu <span id="numero-acessos" aria-live="polite">...</span> acessos</span>
+  </div>
+</footer>
+
+<!-- ---------- VISUALIZADOR ---------- -->
+<div id="visualizador">
+  <div class="barra-visualizador">
+    <button class="btn-voltar" id="btn-voltar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Portal
+    </button>
+    <span id="titulo-visualizador"></span>
+  </div>
+  <iframe id="frame-app" title="Atividade"></iframe>
+</div>
+
+<!-- ---------- TEMPLATES DOS APPS (conteúdo isolado, injetado via srcdoc) ---------- -->
+
+<script>
+  const TITULOS = {
+    'categorizar-objetos': 'Categorizar Objetos',
+    'minha-rotina': 'Minha Rotina',
+    'rastreamento-visual': 'Rastreamento Visual',
+    'respiracao-guiada': 'Respiração Guiada',
+    'termometro-emocoes-offline': 'Termômetro de Emoções',
+    'pega-o-macaco': 'Pega o Macaco!',
+    'alfabeto-libras': 'Alfabeto Manual - Libras',
+    'reconhecimento-horas': 'Reconhecimento de Horas',
+    'comunicacao-alternativa': 'Comunicação Alternativa',
+    'pareamento-som-imagem': 'Pareamento Som-Imagem',
+    'sequencia-historias': 'Sequência de Histórias',
+  };
+
+  const visualizador = document.getElementById('visualizador');
+  const frame         = document.getElementById('frame-app');
+  const tituloEl       = document.getElementById('titulo-visualizador');
+  const btnVoltar      = document.getElementById('btn-voltar');
+
+  // Cada ferramenta agora vive em seu próprio arquivo dentro de /apps.
+  // O portal é só o frontend que abre o módulo correspondente no iframe.
+  const PASTA_APPS = 'apps/';
+
+  function abrirApp(appId) {
+    if (!TITULOS[appId]) return;
+    tituloEl.textContent = TITULOS[appId];
+    frame.src = PASTA_APPS + appId + '.html';
+    visualizador.classList.add('aberto');
+    document.body.classList.add('bloqueado');
+  }
+
+  function fecharApp() {
+    visualizador.classList.remove('aberto');
+    document.body.classList.remove('bloqueado');
+    // limpa o iframe para parar quaisquer timers/sons em execução
+    frame.src = 'about:blank';
+  }
+
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => abrirApp(card.dataset.app));
+  });
+
+  btnVoltar.addEventListener('click', fecharApp);
+
+  // Contador público de acessos para páginas estáticas.
+  // Cada carregamento completo do portal acrescenta um acesso.
+  async function atualizarContadorAcessos() {
+    const numeroAcessos = document.getElementById('numero-acessos');
+    if (!numeroAcessos) return;
+
+    const endpoint = 'https://api.counterapi.dev/v1/portal-gee-ferramentas-pedagogicas/acessos/up';
+
+    try {
+      const resposta = await fetch(endpoint, { cache: 'no-store' });
+      if (!resposta.ok) throw new Error('Falha ao consultar o contador');
+
+      const dados = await resposta.json();
+      const total = Number(dados.count ?? dados.value);
+      if (!Number.isFinite(total)) throw new Error('Resposta inválida do contador');
+
+      numeroAcessos.textContent = total.toLocaleString('pt-BR');
+    } catch (erro) {
+      console.warn('Contador de acessos indisponível:', erro);
+      numeroAcessos.textContent = '—';
+      numeroAcessos.parentElement.setAttribute(
+        'title',
+        'O contador está temporariamente indisponível.'
+      );
+    }
+  }
+
+  atualizarContadorAcessos();
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && visualizador.classList.contains('aberto')) fecharApp();
+  });
+</script>
+
+</body>
+</html>
