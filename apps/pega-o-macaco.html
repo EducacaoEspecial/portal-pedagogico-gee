@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pega o Macaco!</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #FFF8EC;
+      --surface:   #FFFFFF;
+      --border:    #FFE0A0;
+      --yellow:    #FFB800;
+      --yellow-lt: #FFF0C0;
+      --green:     #3DBB6A;
+      --red:       #F95F5F;
+      --text:      #2D2A1E;
+      --muted:     #9A9080;
+      --radius:    20px;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 0;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    header h1 {
+      font-size: clamp(30px, 6vw, 48px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.01em;
+    }
+
+    header h1 span { color: var(--yellow); }
+
+    header p {
+      margin-top: 6px;
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .stats {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 20px;
+      text-align: center;
+      min-width: 90px;
+    }
+
+    .stat-card .val {
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .stat-card .lbl {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+    }
+
+    .stat-card.acertos .val { color: var(--green); }
+    .stat-card.erros   .val { color: var(--red); }
+    .stat-card.nivel   .val { color: var(--yellow); font-size: 18px; }
+
+    #arena {
+      position: relative;
+      width: min(560px, 100%);
+      height: 320px;
+      background: var(--surface);
+      border: 3px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    #arena::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, var(--border) 1.5px, transparent 1.5px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    #macaco {
+      position: absolute;
+      font-size: 52px;
+      line-height: 1;
+      cursor: pointer;
+      user-select: none;
+      transition: left 0.12s cubic-bezier(.17,.67,.43,1.3),
+                  top  0.12s cubic-bezier(.17,.67,.43,1.3),
+                  opacity 0.1s;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+    }
+
+    #macaco:hover { transform: scale(1.12); }
+
+    .banana-pop {
+      position: absolute;
+      font-size: 36px;
+      pointer-events: none;
+      animation: bananaPop 0.7s ease-out forwards;
+      z-index: 10;
+    }
+
+    @keyframes bananaPop {
+      0%   { transform: scale(0.5) translateY(0); opacity: 1; }
+      60%  { transform: scale(1.3) translateY(-30px); opacity: 1; }
+      100% { transform: scale(1)   translateY(-60px); opacity: 0; }
+    }
+
+    #overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,248,236,0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border-radius: calc(var(--radius) - 3px);
+      z-index: 20;
+    }
+
+    #overlay.oculto { display: none; }
+
+    #overlay .titulo-overlay {
+      font-size: 26px;
+      font-weight: 900;
+      text-align: center;
+      padding: 0 16px;
+    }
+
+    #overlay .subtitulo-overlay {
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 700;
+      text-align: center;
+      max-width: 300px;
+      line-height: 1.5;
+      padding: 0 16px;
+    }
+
+    .nivel-wrap {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .nivel-btn {
+      padding: 8px 18px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      cursor: pointer;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+
+    .nivel-btn.ativo,
+    .nivel-btn:hover {
+      background: var(--yellow);
+      border-color: var(--yellow);
+    }
+
+    .btn {
+      padding: 13px 32px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .btn:active { transform: scale(0.96); }
+
+    .btn-iniciar {
+      background: var(--yellow);
+      color: var(--text);
+      box-shadow: 0 4px 0 #D49600;
+    }
+
+    .btn-iniciar:hover { filter: brightness(1.05); }
+
+    #barra-wrap {
+      width: min(560px, 100%);
+      height: 12px;
+      background: var(--border);
+      border-radius: 999px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+
+    #barra {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--yellow);
+      transition: width 0.25s linear, background 0.4s;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 16px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* BOTÃO SOBRE */
+    #btn-sobre {
+      position: fixed;
+      top: 14px; right: 14px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 40px;
+      padding: 6px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      z-index: 50;
+      transition: all 0.15s;
+    }
+    #btn-sobre:hover { background: #F5F3FF; }
+
+    /* MODAL */
+    #modal-sobre {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30,30,60,0.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-box {
+      background: white;
+      border-radius: 24px;
+      padding: 28px 24px;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 8px 40px rgba(80,100,200,0.18);
+      position: relative;
+      animation: popIn 0.3s ease;
+    }
+    #btn-fechar {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #6B7A99;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.85); opacity: 0; }
+      60% { transform: scale(1.04); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Pega o <span>Macaco!</span> 🍌</h1>
+    <p>Clique no macaco antes que ele fuja</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat-card acertos">
+      <div class="val" id="val-acertos">0</div>
+      <div class="lbl">acertos</div>
+    </div>
+    <div class="stat-card erros">
+      <div class="val" id="val-erros">0</div>
+      <div class="lbl">fugas</div>
+    </div>
+    <div class="stat-card nivel">
+      <div class="val" id="val-nivel">—</div>
+      <div class="lbl">nível</div>
+    </div>
+  </div>
+
+  <div id="arena">
+    <div id="macaco">🐒</div>
+
+    <div id="overlay">
+      <div class="titulo-overlay" id="overlay-titulo">🐒 Pega o Macaco!</div>
+      <div class="subtitulo-overlay" id="overlay-sub">Clique no macaco para ganhar bananas. Não deixa ele fugir!</div>
+      <div class="nivel-wrap">
+        <button class="nivel-btn ativo" data-nivel="1">🐢 Devagar</button>
+        <button class="nivel-btn"       data-nivel="2">🐇 Normal</button>
+        <button class="nivel-btn"       data-nivel="3">⚡ Rápido</button>
+      </div>
+      <button class="btn btn-iniciar" id="btn-iniciar">Começar!</button>
+    </div>
+  </div>
+
+  <div id="barra-wrap">
+    <div id="barra" style="width:100%"></div>
+  </div>
+
+  <div id="modal-sobre">
+    <div class="modal-box">
+      <button id="btn-fechar">✕</button>
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:40px;">🐒</div>
+        <h2 style="font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;color:#1A1A2E;margin-top:6px;">Pega o Macaco!</h2>
+      </div>
+      <p style="font-family:'Nunito',sans-serif;font-size:13px;color:#4A5568;line-height:1.7;margin-bottom:12px;">
+        Jogo de cliques rápidos para exercitar a coordenação motora fina e a atenção visual. O aluno deve clicar no macaco antes que ele fuja.
+      </p>
+      <p style="font-family:'Nunito',sans-serif;font-size:13px;color:#4A5568;line-height:1.7;margin-bottom:16px;">
+        Indicado para o desenvolvimento de precisão, foco e tempo de reação em alunos da Educação Especial.
+      </p>
+      <div style="background:#F7F5FF;border-radius:14px;padding:12px 14px;margin-bottom:16px;text-align:center;">
+        <div style="font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:#6B7A99;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Créditos</div>
+        <div style="font-family:'Nunito',sans-serif;font-size:13px;color:#1A1A2E;line-height:1.9;">
+          💡 <b>Idealizado por</b><br>
+          Alamir Rodrigues Rangel Júnior<br>
+          <span style="color:#6B7A99;font-size:12px;">Aux. de Secretaria · GEE</span><br><br>
+          🤖 <b>Implementado por</b><br>
+          Claude · Anthropic
+        </div>
+      </div>
+      <div style="text-align:center;font-family:'Nunito',sans-serif;font-size:11px;color:#A0AECB;font-weight:700;letter-spacing:0.5px;">
+        GEE · Gerência de Educação Especial · Seduct
+      </div>
+    </div>
+  </div>
+
+  <button id="btn-sobre">ℹ️ Sobre</button>
+
+  <footer>GEE · Gerência de Educação Especial · Seduct</footer>
+
+  <script>
+    const NIVEIS = {
+      1: { nome: 'Devagar', tempo: 30, intervalo: 2200 },
+      2: { nome: 'Normal',  tempo: 30, intervalo: 1400 },
+      3: { nome: 'Rápido',  tempo: 30, intervalo: 800  },
+    };
+
+    const arena     = document.getElementById('arena');
+    const macaco    = document.getElementById('macaco');
+    const overlay   = document.getElementById('overlay');
+    const barra     = document.getElementById('barra');
+    const elAcertos = document.getElementById('val-acertos');
+    const elErros   = document.getElementById('val-erros');
+    const elNivel   = document.getElementById('val-nivel');
+    const overlayTitulo = document.getElementById('overlay-titulo');
+    const overlaySub    = document.getElementById('overlay-sub');
+
+    let acertos = 0, erros = 0;
+    let nivelAtual = 1;
+    let timerJogo = null, timerMacaco = null;
+    let tempoRestante = 30;
+    let jogando = false;
+
+    document.querySelectorAll('.nivel-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nivel-btn').forEach(b => b.classList.remove('ativo'));
+        btn.classList.add('ativo');
+        nivelAtual = parseInt(btn.dataset.nivel);
+      });
+    });
+
+    function posAleatoria() {
+      const mw = macaco.offsetWidth  || 60;
+      const mh = macaco.offsetHeight || 60;
+      return {
+        x: Math.random() * (arena.offsetWidth  - mw - 10) + 5,
+        y: Math.random() * (arena.offsetHeight - mh - 10) + 5,
+      };
+    }
+
+    function moverMacaco() {
+      const p = posAleatoria();
+      macaco.style.left = p.x + 'px';
+      macaco.style.top  = p.y + 'px';
+    }
+
+    function centralizar() {
+      macaco.style.left = (arena.offsetWidth  / 2 - 30) + 'px';
+      macaco.style.top  = (arena.offsetHeight / 2 - 30) + 'px';
+    }
+
+    function mostrarBanana(x, y) {
+      const el = document.createElement('div');
+      el.className = 'banana-pop';
+      el.textContent = '🍌';
+      el.style.left = (x - 18) + 'px';
+      el.style.top  = (y - 18) + 'px';
+      arena.appendChild(el);
+      setTimeout(() => el.remove(), 750);
+    }
+
+    function atualizarBarra() {
+      const cfg = NIVEIS[nivelAtual];
+      const pct = (tempoRestante / cfg.tempo) * 100;
+      barra.style.width = pct + '%';
+      barra.style.background = pct > 40 ? 'var(--yellow)' : pct > 15 ? '#FF8800' : 'var(--red)';
+    }
+
+    function piscaMacaco() {
+      macaco.style.filter = 'drop-shadow(0 0 12px #F95F5F)';
+      setTimeout(() => macaco.style.filter = 'drop-shadow(0 4px 8px rgba(0,0,0,0.12))', 280);
+    }
+
+    document.getElementById('btn-iniciar').addEventListener('click', iniciar);
+
+    function iniciar() {
+      const cfg = NIVEIS[nivelAtual];
+      acertos = erros = 0;
+      elAcertos.textContent = 0;
+      elErros.textContent   = 0;
+      elNivel.textContent   = cfg.nome;
+      tempoRestante = cfg.tempo;
+      jogando = true;
+
+      overlay.classList.add('oculto');
+      centralizar();
+      atualizarBarra();
+
+      timerMacaco = setInterval(() => {
+        if (!jogando) return;
+        moverMacaco();
+        erros++;
+        elErros.textContent = erros;
+        piscaMacaco();
+      }, cfg.intervalo);
+
+      timerJogo = setInterval(() => {
+        tempoRestante--;
+        atualizarBarra();
+        if (tempoRestante <= 0) terminar();
+      }, 1000);
+    }
+
+    macaco.addEventListener('click', (e) => {
+      if (!jogando) return;
+      e.stopPropagation();
+      acertos++;
+      elAcertos.textContent = acertos;
+
+      const rect = arena.getBoundingClientRect();
+      mostrarBanana(e.clientX - rect.left, e.clientY - rect.top);
+
+      macaco.style.opacity = '0';
+      setTimeout(() => {
+        moverMacaco();
+        macaco.style.opacity = '1';
+      }, 150);
+    });
+
+    function terminar() {
+      jogando = false;
+      clearInterval(timerJogo);
+      clearInterval(timerMacaco);
+      barra.style.width = '0%';
+
+      const total = acertos + erros;
+      const pct   = total > 0 ? Math.round((acertos / total) * 100) : 0;
+
+      let emoji, msg;
+      if (pct >= 70)      { emoji = '🎉'; msg = 'Incrível! Você é muito rápido!'; }
+      else if (pct >= 40) { emoji = '👏'; msg = 'Muito bem! Continue praticando!'; }
+      else                { emoji = '🙈'; msg = 'O macaco fugiu bastante… tente de novo!'; }
+
+      overlayTitulo.textContent = `${emoji} ${acertos} banana${acertos !== 1 ? 's' : ''}!`;
+      overlaySub.innerHTML = `${msg}<br><span style="font-size:13px;color:var(--muted)">${acertos} acertos · ${erros} fugas · ${pct}% de precisão</span>`;
+
+      document.getElementById('btn-iniciar').textContent = 'Jogar de novo!';
+      overlay.classList.remove('oculto');
+    }
+
+    window.addEventListener('load', centralizar);
+
+    // Modal
+    const modal = document.getElementById('modal-sobre');
+    document.getElementById('btn-sobre').addEventListener('click', ()=>modal.style.display='flex');
+    document.getElementById('btn-fechar').addEventListener('click', ()=>modal.style.display='none');
+    modal.addEventListener('click', e=>{ if(e.target===modal) modal.style.display='none'; });
+  </script>
+
+</body>
+</html>
