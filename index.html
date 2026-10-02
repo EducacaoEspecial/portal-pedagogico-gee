@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal de Ferramentas — GEE · SEDUCT v.11:34-10-08-26</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue-900: #0d2a4a; --blue-800: #103a63; --blue-600: #1a5fa8;
+      --blue-400: #3b8fd4; --blue-100: #dbeeff; --accent: #f0a500;
+      --surface: #f4f7fb; --card: #ffffff; --text-main: #0d2a4a;
+      --text-sub: #5a7390; --border: #d6e4f0; --radius: 16px;
+      --shadow: 0 4px 24px rgba(13,42,74,.10);
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(--text-main); min-height: 100vh; }
+    header {
+      background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-800) 60%, var(--blue-600) 100%);
+      padding: 0 32px; position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; box-shadow: 0 2px 12px rgba(0,0,0,.25);
+    }
+    .header-brand { display: flex; align-items: center; gap: 12px; }
+    .header-logo {
+      width: 38px; height: 38px; background: var(--accent); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800;
+      font-size: 15px; color: var(--blue-900); flex-shrink: 0;
+    }
+    .header-text h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: #fff; line-height: 1.2; }
+    .header-text span { font-size: 11px; color: rgba(255,255,255,.55); }
+    .header-badge { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); color: rgba(255,255,255,.75); font-size: 11px; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+    .hero {
+      background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-800) 60%, var(--blue-600) 100%);
+      padding: 52px 32px 80px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(240,165,0,.15); border: 1px solid rgba(240,165,0,.35);
+      color: var(--accent); font-size: 11.5px; font-weight: 600;
+      letter-spacing: .6px; text-transform: uppercase; padding: 5px 14px;
+      border-radius: 20px; margin-bottom: 18px; position: relative;
+    }
+    .hero h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(24px, 4vw, 36px); font-weight: 800; color: #fff; margin-bottom: 10px; }
+    .hero p { color: rgba(255,255,255,.6); font-size: 14px; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+    main { max-width: 880px; margin: -40px auto 0; padding: 0 24px 60px; position: relative; }
+    .section-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .section-label span { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-sub); }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(13,42,74,.16); border-color: var(--blue-400); }
+    .card-top { height: 6px; }
+    .card-body { padding: 22px 22px 14px; flex: 1; display: flex; flex-direction: column; }
+    .card-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+    .card-icon svg { width: 22px; height: 22px; }
+    .card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15.5px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+    .card p { font-size: 13px; color: var(--text-sub); line-height: 1.55; flex: 1; }
+    .card-footer { padding: 12px 22px 16px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); margin-top: 14px; }
+    .card-tag { font-size: 10.5px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; }
+    .card-arrow { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+    .card:hover .card-arrow { background: var(--blue-100); }
+    .card-arrow svg { width: 14px; height: 14px; }
+    .theme-blue .card-top { background: linear-gradient(90deg, #1a5fa8, #3b8fd4); }
+    .theme-blue .card-icon { background: var(--blue-100); color: var(--blue-600); }
+    .theme-blue .card-tag { background: var(--blue-100); color: var(--blue-600); }
+    .theme-blue .card-arrow svg { stroke: var(--blue-600); }
+    .theme-amber .card-top { background: linear-gradient(90deg, #c97a00, #f0a500); }
+    .theme-amber .card-icon { background: #fff3d0; color: #9a5f00; }
+    .theme-amber .card-tag { background: #fff3d0; color: #9a5f00; }
+    .theme-amber .card-arrow svg { stroke: #9a5f00; }
+    .theme-teal .card-top { background: linear-gradient(90deg, #0d7a6e, #16a895); }
+    .theme-teal .card-icon { background: #d4f5f1; color: #0a5f56; }
+    .theme-teal .card-tag { background: #d4f5f1; color: #0a5f56; }
+    .theme-teal .card-arrow svg { stroke: #0a5f56; }
+    
+    .theme-green .card-top { background: linear-gradient(90deg, #0d5c2f, #16a34a); }
+    .theme-green .card-icon { background: #dcfce7; color: #0d5c2f; }
+    .theme-green .card-tag { background: #dcfce7; color: #0d5c2f; }
+    .theme-green .card-arrow svg { stroke: #0d5c2f; }
+    .theme-rose .card-top { background: linear-gradient(90deg, #8a1042, #c2185b); }
+    .theme-rose .card-icon { background: #fbe3ed; color: #8a1042; }
+    .theme-rose .card-tag { background: #fbe3ed; color: #8a1042; }
+    .theme-rose .card-arrow svg { stroke: #8a1042; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(8,22,40,.7); backdrop-filter: blur(4px); z-index: 200; flex-direction: column; }
+    .modal-overlay.open { display: flex; }
+    .modal-header { background: var(--blue-900); padding: 14px 20px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .modal-close { margin-left: auto; background: rgba(255,255,255,.1); border: none; cursor: pointer; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .modal-close:hover { background: rgba(255,255,255,.2); }
+    .modal-close svg { stroke: #fff; width: 16px; height: 16px; fill: none; stroke-width: 2; stroke-linecap: round; }
+    .modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: #fff; }
+    .modal-subtitle { font-size: 11px; color: rgba(255,255,255,.5); }
+    .modal-frame-wrap { flex: 1; overflow: hidden; }
+    .modal-frame-wrap iframe { width: 100%; height: 100%; border: none; background: #fff; display: block; }
+    footer { text-align: center; padding: 28px 24px; font-size: 11.5px; color: var(--text-sub); border-top: 1px solid var(--border); }
+    footer strong { color: var(--blue-600); }
+    @media (max-width: 540px) { .hero { padding: 40px 20px 70px; } main { padding: 0 16px 48px; } .header-badge { display: none; } }
+
+    .access-counter {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+    .access-counter .eye { font-size: 16px; }
+    .access-counter #accessCount {
+      color: #0d5c56;
+      font-weight: 800;
+      min-width: 1.5ch;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <div class="header-logo">GEE</div>
+    <div class="header-text">
+      <h1>Gerência de Educação Especial</h1>
+      <span>Secretaria de Educação, Ciência e Tecnologia · Campos dos Goytacazes</span>
+    </div>
+  </div>
+  <div class="header-badge">SEDUCT · 2025</div>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Ferramentas Administrativas
+  </div>
+  <h2>Portal de Sistemas da GEE</h2>
+  <p>Acesse os sistemas digitais da Gerência de Educação Especial. Todas as ferramentas funcionam offline, sem instalação.</p>
+</div>
+
+<main>
+  <div class="section-label"><span>Sistemas disponíveis</span></div>
+  <div class="cards">
+
+    <div class="card theme-blue" onclick="openApp(0)">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <h3>Calculadora de Prazos</h3>
+        <p>Calcule prazos em dias úteis considerando feriados nacionais e municipais de Campos dos Goytacazes.</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-tag">Prazos</span>
+        <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+    </div>
+
+    <div class="card theme-amber" onclick="openApp(1)">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <h3>Gerador de Ofício / Memorando</h3>
+        <p>Gere documentos oficiais formatados com cabeçalho institucional e numeração padronizada.</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-tag">Documentos</span>
+        <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+    </div>
+
+    <div class="card theme-teal" onclick="openApp(2)">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </div>
+        <h3>Lista de Presença</h3>
+        <p>Gere listas de presença para reuniões, formações e eventos com campos configuráveis e exportação para impressão.</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-tag">Presenças</span>
+        <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+    </div>
+
+
+    <div class="card theme-green" onclick="openApp(3)">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/><line x1="13" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <h3>Gerador de Resumo</h3>
+        <p>Resuma documentos PDF automaticamente, extraindo os pontos mais relevantes do conteúdo.</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-tag">PDF · Resumo</span>
+        <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+    </div>
+
+    <div class="card theme-amber" onclick="openApp(4)">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <h3>Gerar Ficha de Ponto</h3>
+        <p>Gere fichas de ponto para registro de frequência dos profissionais da GEE.</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-tag">Frequência</span>
+        <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+    </div>
+
+    <div class="card theme-teal" onclick="openApp(5)">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <h3>Termo de Visita</h3>
+        <p>Registre visitas técnicas às unidades escolares, com avaliação de estrutura, documentação e atendimento aos alunos da Educação Especial.</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-tag">Visitas</span>
+        <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+    </div>
+
+    <div class="card theme-blue" onclick="openApp(6)">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <h3>Gerador de Senha</h3>
+        <p>Gere senhas aleatórias com quantidade configurável de números, letras e caracteres especiais, com indicador de força.</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-tag">Segurança</span>
+        <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+    </div>
+
+    <div class="card theme-rose" onclick="openApp(7)">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            <circle cx="9" cy="16" r="1.6" fill="currentColor" stroke="none"/><circle cx="15" cy="16" r="1.6" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <h3>Gerador de Calendário</h3>
+        <p>Gere calendários em PDF (A4) com a identidade visual da GEE: mês específico, ano completo ou ano compacto, com opção de inserir aniversariantes antes de imprimir.</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-tag">Calendário</span>
+        <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+    </div>
+
+    <div class="card theme-rose" onclick="openApp(8)">
+      <div class="card-top"></div>
+      <div class="card-body">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h3>Painel de Alocação</h3>
+        <p>Cruza a meta de mediadores e cuidadores de cada escola com a quantidade atualmente alocada, sinalizando vagas em aberto e excessos por unidade e por região.</p>
+      </div>
+      <div class="card-footer">
+        <span class="card-tag">Alocação</span>
+        <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-header">
+    <div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-subtitle">GEE · SEDUCT · Campos dos Goytacazes</div>
+    </div>
+    <button class="modal-close" onclick="closeApp()" title="Fechar">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="modal-frame-wrap">
+    <iframe id="appFrame" title="Sistema GEE" sandbox="allow-scripts allow-same-origin allow-modals allow-popups allow-popups-to-escape-sandbox allow-forms allow-downloads"></iframe>
+  </div>
+</div>
+
+<footer>
+  <strong>GEE · Gerência de Educação Especial</strong> · Secretaria de Educação, Ciência e Tecnologia · Campos dos Goytacazes — RJ<br>
+  <span style="margin-top:4px;display:block">Idealizador: Alamir Rodrigues Rangel Júnior · Implementado por: Claude AI — Anthropic</span>
+
+  <div class="access-counter" title="Contagem de visualizações do portal">
+    <span class="eye" aria-hidden="true">👁️</span>
+    <span>Este portal já recebeu <span id="accessCount">—</span> acessos</span>
+  </div>
+</footer>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
+
+<script>
+  var appFiles = ['apps/calculadora-de-prazos.html', 'apps/gerador-de-oficio-memorando.html', 'apps/lista-de-presenca.html', 'apps/gerador-de-resumo-pdf.html', 'apps/gerar-ficha-de-ponto.html', 'apps/termo-de-visita.html', 'apps/gerador-de-senha.html', 'apps/gerador-de-calendario.html', 'apps/painel-de-alocacao.html'];
+  var titles = ['Calculadora de Prazos', 'Gerador de Ofício / Memorando', 'Lista de Presença', 'Gerador de Resumo de PDF', 'Gerar Ficha de Ponto', 'Termo de Visita', 'Gerador de Senha', 'Gerador de Calendário', 'Painel de Alocação'];
+
+  function openApp(idx) {
+    document.getElementById('appFrame').src = appFiles[idx];
+    document.getElementById('modalTitle').textContent = titles[idx];
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeApp() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.getElementById('appFrame').src = '';
+    document.body.style.overflow = '';
+  }
+
+
+  // Contador global de visualizações do portal.
+  // Conta uma visualização por sessão do navegador, evitando somar a cada F5.
+  document.addEventListener('DOMContentLoaded', async function () {
+    const el = document.getElementById('accessCount');
+    if (!el) return;
+
+    try {
+      const counter = new Counter({
+        workspace: 'gee-seduct-campos-alamir-2026'
+      });
+
+      const sessionKey = 'geePortalJaContabilizado';
+      let result;
+
+      if (sessionStorage.getItem(sessionKey)) {
+        result = await counter.get('portal-acessos');
+      } else {
+        result = await counter.up('portal-acessos');
+        sessionStorage.setItem(sessionKey, '1');
+      }
+
+      const value =
+        result?.value ??
+        result?.data ??
+        result?.count ??
+        0;
+
+      el.textContent = Number(value).toLocaleString('pt-BR');
+    } catch (error) {
+      console.error('Não foi possível carregar o contador de acessos:', error);
+      el.textContent = '—';
+      el.parentElement.title = 'Contador temporariamente indisponível';
+    }
+  });
+
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeApp(); });
+</script>
+</body>
+</html>
