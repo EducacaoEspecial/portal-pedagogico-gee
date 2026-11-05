@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contagem e Quantidades · Portal GEE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Inter:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #FBF8F2;
+    --surface:   #FFFFFF;
+    --ink:       #2A2620;
+    --muted:     #847A68;
+    --line:      #EBE3D3;
+    --cor:       #0891B2;
+    --cor-dark:  #0E7490;
+    --cor-tint:  #D5F3F9;
+    --ok:        #16A34A;
+    --ok-tint:   #DCFCE7;
+    --aviso:     #E8734F;
+    --aviso-tint:#FCE6DC;
+    --ambar:     #F59E0B;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  html, body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, #E3D9BE 1.4px, transparent 1.4px);
+    background-size: 26px 26px;
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  button { font-family: inherit; color: inherit; cursor: pointer; }
+  button:focus-visible { outline: 3px solid var(--cor); outline-offset: 3px; }
+
+  .tela {
+    position: relative;
+    z-index: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 28px 20px 40px;
+    min-height: 100vh;
+  }
+  .tela.ativa { display: flex; }
+
+  /* ---------- TELA INICIAL ---------- */
+  .cabeca { text-align: center; margin-bottom: 26px; }
+
+  .icone-grande {
+    width: 76px; height: 76px;
+    margin: 0 auto 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+    border-radius: 22px;
+    background: var(--cor-tint);
+    transform: rotate(-5deg);
+  }
+
+  h1 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: clamp(26px, 4.5vw, 36px);
+    line-height: 1.1;
+  }
+
+  .cabeca p { margin-top: 8px; color: var(--muted); font-weight: 500; }
+
+  .bloco { width: 100%; margin-bottom: 22px; }
+
+  .rotulo {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 10px 2px;
+  }
+
+  .modos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .modo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    text-align: left;
+    padding: 18px;
+    border-radius: 18px;
+    border: 2px solid var(--line);
+    background: var(--surface);
+    transition: border-color .15s, transform .15s, box-shadow .15s;
+  }
+  .modo:hover { transform: translateY(-2px); border-color: var(--cor); }
+  .modo.ativo {
+    border-color: var(--cor);
+    background: var(--cor-tint);
+    box-shadow: 0 10px 22px -12px rgba(8, 145, 178, .6);
+  }
+  .modo-ic { font-size: 30px; line-height: 1; }
+  .modo strong { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 17px; }
+  .modo small { color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+
+  .niveis { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .nivel {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 11px 24px;
+    border-radius: 999px;
+    border: 2px solid var(--line);
+    background: var(--surface);
+    color: var(--muted);
+  }
+  .nivel:hover { border-color: var(--cor); color: var(--cor-dark); }
+  .nivel.ativo { background: var(--cor); border-color: var(--cor); color: #fff; }
+
+  .chave {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    align-self: flex-start;
+    margin-bottom: 26px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+  }
+  .chave input { width: 20px; height: 20px; accent-color: var(--cor); cursor: pointer; }
+
+  .btn-principal {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: #fff;
+    background: var(--cor);
+    border: none;
+    border-radius: 999px;
+    padding: 15px 48px;
+    box-shadow: 0 12px 24px -12px rgba(8, 145, 178, .7);
+    transition: filter .15s, transform .1s;
+  }
+  .btn-principal:hover { filter: brightness(1.08); }
+  .btn-principal:active { transform: scale(.97); }
+
+  .btn-sec {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 16px;
+  }
+  .btn-sec:hover { border-color: var(--cor); color: var(--cor-dark); }
+  .btn-sec.grande { font-size: 16px; padding: 13px 28px; }
+
+  /* ---------- TELA DE JOGO ---------- */
+  .barra {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .progresso { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .progresso span {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: var(--line);
+    transition: background .2s, transform .2s;
+  }
+  .progresso span.atual { background: var(--cor); transform: scale(1.3); }
+  .progresso span.primeira { background: var(--ok); }
+  .progresso span.depois { background: var(--ambar); }
+
+  .pergunta {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: clamp(22px, 4vw, 30px);
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .palco {
+    width: 100%;
+    min-height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 22px 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    margin-bottom: 10px;
+  }
+
+  .grupo {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 5), auto);
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .obj {
+    position: relative;
+    font-size: clamp(36px, 7vw, 54px);
+    line-height: 1;
+    background: none;
+    border: 3px solid transparent;
+    border-radius: 16px;
+    padding: 6px;
+    animation: aparecer .35s ease backwards;
+    transition: border-color .15s, background .15s, transform .1s;
+  }
+  button.obj:hover { background: var(--cor-tint); }
+  button.obj:active { transform: scale(.92); }
+
+  .obj.contado { border-color: var(--cor); background: var(--cor-tint); }
+  .obj.contado::after {
+    content: attr(data-n);
+    position: absolute;
+    top: -9px; right: -9px;
+    min-width: 26px; height: 26px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--cor);
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  @keyframes aparecer {
+    from { opacity: 0; transform: scale(.4); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .sinal {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: clamp(36px, 6vw, 52px);
+    color: var(--cor);
+  }
+
+  .conta {
+    width: 100%;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    color: var(--muted);
+    letter-spacing: .04em;
+  }
+
+  .numero-grande {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: clamp(90px, 18vw, 140px);
+    line-height: 1;
+    color: var(--cor);
+    animation: aparecer .35s ease;
+  }
+
+  .btn-link {
+    background: none;
+    border: none;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--cor-dark);
+    padding: 6px 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .btn-link:hover { background: var(--cor-tint); }
+  .btn-link[hidden] { display: none; }
+
+  .opcoes {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 10px;
+  }
+
+  .opcao-num {
+    width: 82px; height: 82px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 38px;
+    background: var(--surface);
+    border: 3px solid var(--line);
+    border-radius: 22px;
+    box-shadow: 0 6px 0 var(--line);
+    transition: border-color .15s, transform .1s, box-shadow .1s;
+  }
+  .opcao-num:hover { border-color: var(--cor); }
+  .opcao-num:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--line); }
+
+  .opcao-grupo {
+    min-width: 170px;
+    min-height: 120px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 3px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 6px 0 var(--line);
+    transition: border-color .15s, transform .1s, box-shadow .1s;
+  }
+  .opcao-grupo:hover { border-color: var(--cor); }
+  .opcao-grupo:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--line); }
+  .opcao-grupo .grupo { gap: 4px; }
+  .opcao-grupo .obj { font-size: 28px; padding: 2px; border: none; }
+
+  .opcao-num.certo, .opcao-grupo.certo {
+    border-color: var(--ok);
+    background: var(--ok-tint);
+    box-shadow: 0 6px 0 #A7E3BC;
+    animation: pular .45s ease;
+  }
+  .opcao-num.errado, .opcao-grupo.errado {
+    border-color: var(--aviso);
+    background: var(--aviso-tint);
+    opacity: .55;
+    animation: tremer .4s ease;
+    cursor: default;
+  }
+
+  @keyframes pular {
+    0%, 100% { transform: scale(1); }
+    40% { transform: scale(1.15); }
+  }
+  @keyframes tremer {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+
+  .feedback {
+    min-height: 32px;
+    margin-top: 20px;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 19px;
+  }
+  .feedback.ok { color: var(--ok); }
+  .feedback.erro { color: var(--aviso); }
+
+  /* ---------- TELA FINAL ---------- */
+  #tela-fim { justify-content: center; text-align: center; gap: 12px; }
+
+  .estrelas { font-size: 58px; letter-spacing: 6px; margin-bottom: 6px; }
+  .estrelas span { display: inline-block; animation: aparecer .5s ease backwards; }
+  .estrelas span.apagada { filter: grayscale(1); opacity: .25; }
+
+  #fim-texto { color: var(--muted); font-size: 17px; font-weight: 500; max-width: 420px; }
+
+  .fim-botoes {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 18px;
+  }
+
+  @media (max-width: 520px) {
+    .tela { padding: 20px 14px 32px; }
+    .opcao-num { width: 68px; height: 68px; font-size: 32px; border-radius: 18px; }
+    .opcao-grupo { min-width: 140px; min-height: 100px; padding: 12px; }
+    .opcao-grupo .obj { font-size: 22px; }
+    .palco { gap: 10px; padding: 18px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ---------- TELA INICIAL ---------- -->
+<section id="tela-inicio" class="tela ativa">
+  <div class="cabeca">
+    <div class="icone-grande" aria-hidden="true">🔢</div>
+    <h1>Contagem e Quantidades</h1>
+    <p>Escolha a atividade e o nível para começar.</p>
+  </div>
+
+  <div class="bloco">
+    <h2 class="rotulo">Atividade</h2>
+    <div class="modos" role="radiogroup" aria-label="Atividade">
+      <button class="modo ativo" data-modo="contar" role="radio" aria-checked="true" type="button">
+        <span class="modo-ic" aria-hidden="true">🍎</span>
+        <strong>Quantos são?</strong>
+        <small>Conte os objetos tocando em cada um e escolha o número certo.</small>
+      </button>
+      <button class="modo" data-modo="numero" role="radio" aria-checked="false" type="button">
+        <span class="modo-ic" aria-hidden="true">🎯</span>
+        <strong>Encontre o grupo</strong>
+        <small>Veja o número e encontre o grupo que tem essa quantidade.</small>
+      </button>
+      <button class="modo" data-modo="somar" role="radio" aria-checked="false" type="button">
+        <span class="modo-ic" aria-hidden="true">➕</span>
+        <strong>Juntar e contar</strong>
+        <small>Junte dois grupos e descubra quantos são ao todo.</small>
+      </button>
+    </div>
+  </div>
+
+  <div class="bloco">
+    <h2 class="rotulo">Nível</h2>
+    <div class="niveis" role="radiogroup" aria-label="Nível">
+      <button class="nivel ativo" data-nivel="5" role="radio" aria-checked="true" type="button">Até 5</button>
+      <button class="nivel" data-nivel="10" role="radio" aria-checked="false" type="button">Até 10</button>
+    </div>
+  </div>
+
+  <label class="chave">
+    <input type="checkbox" id="opt-voz" checked />
+    <span>🔊 Ler as perguntas em voz alta</span>
+  </label>
+
+  <button class="btn-principal" id="btn-comecar" type="button">Começar</button>
+</section>
+
+<!-- ---------- TELA DE JOGO ---------- -->
+<section id="tela-jogo" class="tela">
+  <div class="barra">
+    <button class="btn-sec" id="btn-sair" type="button">← Atividades</button>
+    <div class="progresso" id="progresso" aria-label="Progresso"></div>
+    <button class="btn-sec" id="btn-ouvir" type="button" aria-label="Ouvir a pergunta de novo">🔊</button>
+  </div>
+
+  <h2 class="pergunta" id="pergunta"></h2>
+  <div class="palco" id="palco"></div>
+  <button class="btn-link" id="btn-recontar" type="button" hidden>↺ Contar de novo</button>
+  <div class="opcoes" id="opcoes"></div>
+  <p class="feedback" id="feedback" aria-live="polite"></p>
+</section>
+
+<!-- ---------- TELA FINAL ---------- -->
+<section id="tela-fim" class="tela">
+  <div class="estrelas" id="estrelas" aria-hidden="true"></div>
+  <h1 id="fim-titulo"></h1>
+  <p id="fim-texto"></p>
+  <div class="fim-botoes">
+    <button class="btn-principal" id="btn-repetir" type="button">Jogar de novo</button>
+    <button class="btn-sec grande" id="btn-menu" type="button">Mudar atividade</button>
+  </div>
+</section>
+
+<script>
+  const TOTAL_RODADAS = 10;
+  const ATRASO_PROXIMA = 1900; // ms entre o acerto e a próxima rodada
+
+  // u = singular, p = plural, g = gênero (para "um/uma", "dois/duas")
+  const OBJETOS = [
+    { e: '🍎', u: 'maçã',      p: 'maçãs',      g: 'f' },
+    { e: '⭐', u: 'estrela',   p: 'estrelas',   g: 'f' },
+    { e: '🐟', u: 'peixe',     p: 'peixes',     g: 'm' },
+    { e: '🎈', u: 'balão',     p: 'balões',     g: 'm' },
+    { e: '🚗', u: 'carro',     p: 'carros',     g: 'm' },
+    { e: '🐞', u: 'joaninha',  p: 'joaninhas',  g: 'f' },
+    { e: '🍓', u: 'morango',   p: 'morangos',   g: 'm' },
+    { e: '⚽', u: 'bola',      p: 'bolas',      g: 'f' },
+    { e: '🌸', u: 'flor',      p: 'flores',     g: 'f' },
+    { e: '🐥', u: 'pintinho',  p: 'pintinhos',  g: 'm' },
+    { e: '🦋', u: 'borboleta', p: 'borboletas', g: 'f' },
+  ];
+
+  const EXTENSO = ['zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez'];
+
+  function extenso(n, g) {
+    if (g === 'f' && n === 1) return 'uma';
+    if (g === 'f' && n === 2) return 'duas';
+    return EXTENSO[n];
+  }
+  const nomeQtd = (n, obj) => `${extenso(n, obj.g)} ${n === 1 ? obj.u : obj.p}`;
+  const quantos = obj => (obj.g === 'f' ? 'Quantas' : 'Quantos');
+  const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const embaralhar = arr => {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
+  // ---------- ESTADO ----------
+  const estado = {
+    modo: 'contar',
+    nivel: 5,
+    voz: true,
+    rodada: 0,
+    acertos: 0,
+    resultados: [],
+    errou: false,
+    bloqueado: false,
+    contagem: 0,
+    ultimoAlvo: null,
+    ultimoObjeto: null,
+    fala: '',
+    timer: null,
+  };
+
+  // ---------- ELEMENTOS ----------
+  const $ = id => document.getElementById(id);
+  const telas = { inicio: $('tela-inicio'), jogo: $('tela-jogo'), fim: $('tela-fim') };
+  const elPergunta = $('pergunta');
+  const elPalco = $('palco');
+  const elOpcoes = $('opcoes');
+  const elFeedback = $('feedback');
+  const elProgresso = $('progresso');
+  const btnRecontar = $('btn-recontar');
+  const optVoz = $('opt-voz');
+
+  function mostrarTela(nome) {
+    Object.entries(telas).forEach(([k, el]) => el.classList.toggle('ativa', k === nome));
+    window.scrollTo(0, 0);
+  }
+
+  // ---------- PREFERÊNCIAS (guardadas no navegador) ----------
+  const CHAVE_PREFS = 'gee-contagem-prefs';
+  function carregarPrefs() {
+    try {
+      const p = JSON.parse(localStorage.getItem(CHAVE_PREFS) || '{}');
+      if (['contar', 'numero', 'somar'].includes(p.modo)) estado.modo = p.modo;
+      if ([5, 10].includes(p.nivel)) estado.nivel = p.nivel;
+      if (typeof p.voz === 'boolean') estado.voz = p.voz;
+    } catch (e) { /* sem armazenamento: usa padrões */ }
+  }
+  function salvarPrefs() {
+    try {
+      localStorage.setItem(CHAVE_PREFS, JSON.stringify({ modo: estado.modo, nivel: estado.nivel, voz: estado.voz }));
+    } catch (e) { /* ignora */ }
+  }
+
+  // ---------- VOZ ----------
+  let vozPt = null;
+  function escolherVoz() {
+    if (!('speechSynthesis' in window)) return;
+    const vozes = speechSynthesis.getVoices();
+    vozPt = vozes.find(v => v.lang === 'pt-BR') || vozes.find(v => v.lang && v.lang.startsWith('pt')) || null;
+  }
+  if ('speechSynthesis' in window) {
+    escolherVoz();
+    speechSynthesis.addEventListener('voiceschanged', escolherVoz);
+  }
+
+  function falar(texto) {
+    if (!estado.voz || !('speechSynthesis' in window) || !texto) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(texto);
+    u.lang = 'pt-BR';
+    u.rate = 0.9;
+    if (vozPt) u.voice = vozPt;
+    speechSynthesis.speak(u);
+  }
+  function calar() {
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+  }
+
+  // ---------- SORTEIOS ----------
+  function sortearObjeto() {
+    let obj;
+    do { obj = OBJETOS[rand(0, OBJETOS.length - 1)]; } while (obj === estado.ultimoObjeto);
+    estado.ultimoObjeto = obj;
+    return obj;
+  }
+
+  function sortearAlvo(min, max) {
+    let n;
+    do { n = rand(min, max); } while (n === estado.ultimoAlvo && max > min);
+    estado.ultimoAlvo = n;
+    return n;
+  }
+
+  // Gera opções numéricas próximas da resposta, em ordem crescente.
+  function opcoesNumericas(certo, min, max, qtd) {
+    if (max - min + 1 <= qtd) {
+      return Array.from({ length: max - min + 1 }, (_, i) => min + i);
+    }
+    const set = new Set([certo]);
+    let tentativas = 0;
+    while (set.size < qtd && tentativas < 100) {
+      const c = certo + rand(-3, 3);
+      if (c >= min && c <= max) set.add(c);
+      tentativas++;
+    }
+    while (set.size < qtd) set.add(rand(min, max));
+    return [...set].sort((a, b) => a - b);
+  }
+
+  // Quantidades distintas para o modo "Encontre o grupo".
+  function quantidadesDistintas(certo, max, qtd) {
+    const set = new Set([certo]);
+    while (set.size < qtd) set.add(rand(1, max));
+    return embaralhar([...set]);
+  }
+
+  // ---------- RENDERIZAÇÃO ----------
+  function criarGrupo(n, obj, tocavel) {
+    const g = document.createElement('div');
+    g.className = 'grupo';
+    g.style.setProperty('--cols', Math.min(n, 5)); // fileiras de 5, como no material dourado / quadro de dez
+    for (let i = 0; i < n; i++) {
+      const el = document.createElement(tocavel ? 'button' : 'span');
+      el.className = 'obj';
+      el.textContent = obj.e;
+      el.style.animationDelay = `${i * 45}ms`;
+      if (tocavel) {
+        el.type = 'button';
+        el.setAttribute('aria-label', `${obj.u}, toque para contar`);
+        el.addEventListener('click', () => marcarContado(el));
+      } else {
+        el.setAttribute('aria-hidden', 'true');
+      }
+      g.appendChild(el);
+    }
+    return g;
+  }
+
+  function marcarContado(el) {
+    if (el.dataset.n || estado.bloqueado) return;
+    estado.contagem++;
+    el.dataset.n = estado.contagem;
+    el.classList.add('contado');
+    falar(EXTENSO[estado.contagem] || String(estado.contagem));
+  }
+
+  function recontar() {
+    estado.contagem = 0;
+    elPalco.querySelectorAll('.obj.contado').forEach(el => {
+      el.classList.remove('contado');
+      delete el.dataset.n;
+    });
+  }
+
+  function desenharProgresso() {
+    elProgresso.innerHTML = '';
+    for (let i = 0; i < TOTAL_RODADAS; i++) {
+      const s = document.createElement('span');
+      if (estado.resultados[i]) s.className = estado.resultados[i];
+      else if (i === estado.rodada) s.className = 'atual';
+      elProgresso.appendChild(s);
+    }
+    elProgresso.setAttribute('aria-label', `Rodada ${estado.rodada + 1} de ${TOTAL_RODADAS}`);
+  }
+
+  function botaoNumero(n, correto, msgOk, msgErro) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'opcao-num';
+    b.textContent = n;
+    b.addEventListener('click', () => responder(b, n === correto, msgOk, msgErro));
+    return b;
+  }
+
+  // ---------- RODADAS ----------
+  function novaRodada() {
+    clearTimeout(estado.timer);
+    estado.errou = false;
+    estado.bloqueado = false;
+    estado.contagem = 0;
+    elFeedback.textContent = '';
+    elFeedback.className = 'feedback';
+    elPalco.innerHTML = '';
+    elOpcoes.innerHTML = '';
+
+    const max = estado.nivel;
+    const obj = sortearObjeto();
+
+    if (estado.modo === 'contar') {
+      const n = sortearAlvo(1, max);
+      elPergunta.textContent = `${quantos(obj)} ${obj.p} você vê?`;
+      elPalco.appendChild(criarGrupo(n, obj, true));
+      btnRecontar.hidden = false;
+
+      const msgOk = n === 1 ? `Isso! É ${nomeQtd(1, obj)}!` : `Isso! São ${nomeQtd(n, obj)}!`;
+      const msgErro = 'Quase! Toque em cada um para contar.';
+      const qtd = max <= 5 ? 5 : 4;
+      opcoesNumericas(n, 1, max, qtd).forEach(v => elOpcoes.appendChild(botaoNumero(v, n, msgOk, msgErro)));
+      estado.fala = elPergunta.textContent;
+    }
+
+    else if (estado.modo === 'numero') {
+      const n = sortearAlvo(1, max);
+      elPergunta.textContent = `Encontre o grupo com ${n}`;
+      const num = document.createElement('div');
+      num.className = 'numero-grande';
+      num.textContent = n;
+      elPalco.appendChild(num);
+      btnRecontar.hidden = true;
+
+      quantidadesDistintas(n, max, 3).forEach(q => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'opcao-grupo';
+        b.setAttribute('aria-label', `Grupo com ${nomeQtd(q, obj)}`);
+        b.appendChild(criarGrupo(q, obj, false));
+        const msgOk = `Muito bem! Esse grupo tem ${nomeQtd(n, obj)}!`;
+        const msgErro = `Esse grupo tem ${q}. Procure o grupo com ${n}.`;
+        b.addEventListener('click', () => responder(b, q === n, msgOk, msgErro));
+        elOpcoes.appendChild(b);
+      });
+      estado.fala = `Encontre o grupo com ${nomeQtd(n, obj)}.`;
+    }
+
+    else { // somar
+      let a, b, total;
+      do {
+        a = rand(1, max - 1);
+        b = rand(1, max - a);
+        total = a + b;
+      } while (total === estado.ultimoAlvo && max > 2);
+      estado.ultimoAlvo = total;
+
+      elPergunta.textContent = `${quantos(obj)} ${obj.p} ao todo?`;
+      elPalco.appendChild(criarGrupo(a, obj, true));
+      const mais = document.createElement('span');
+      mais.className = 'sinal';
+      mais.textContent = '+';
+      mais.setAttribute('aria-hidden', 'true');
+      elPalco.appendChild(mais);
+      elPalco.appendChild(criarGrupo(b, obj, true));
+      const conta = document.createElement('div');
+      conta.className = 'conta';
+      conta.textContent = `${a} + ${b} = ?`;
+      elPalco.appendChild(conta);
+      btnRecontar.hidden = false;
+
+      const msgOk = `Isso! ${a} mais ${b} são ${total}!`;
+      const msgErro = 'Quase! Conte todos juntos, tocando em cada um.';
+      opcoesNumericas(total, 2, max, 4).forEach(v => elOpcoes.appendChild(botaoNumero(v, total, msgOk, msgErro)));
+      estado.fala = `${nomeQtd(a, obj)} mais ${nomeQtd(b, obj)}. ${elPergunta.textContent}`;
+    }
+
+    desenharProgresso();
+    falar(estado.fala);
+  }
+
+  function responder(botao, certo, msgOk, msgErro) {
+    if (estado.bloqueado || botao.disabled) return;
+
+    if (certo) {
+      estado.bloqueado = true;
+      botao.classList.add('certo');
+      if (!estado.errou) estado.acertos++;
+      estado.resultados[estado.rodada] = estado.errou ? 'depois' : 'primeira';
+      elFeedback.textContent = `${msgOk} 🎉`;
+      elFeedback.className = 'feedback ok';
+      elOpcoes.querySelectorAll('button').forEach(b => { b.disabled = true; });
+      falar(msgOk);
+      estado.timer = setTimeout(proximaRodada, ATRASO_PROXIMA);
+    } else {
+      estado.errou = true;
+      botao.classList.add('errado');
+      botao.disabled = true;
+      elFeedback.textContent = msgErro;
+      elFeedback.className = 'feedback erro';
+      falar(msgErro);
+    }
+  }
+
+  function proximaRodada() {
+    estado.rodada++;
+    if (estado.rodada >= TOTAL_RODADAS) mostrarFim();
+    else novaRodada();
+  }
+
+  function iniciarJogo() {
+    clearTimeout(estado.timer);
+    estado.rodada = 0;
+    estado.acertos = 0;
+    estado.resultados = [];
+    estado.ultimoAlvo = null;
+    mostrarTela('jogo');
+    novaRodada();
+  }
+
+  function mostrarFim() {
+    const a = estado.acertos;
+    const estrelas = a >= 9 ? 3 : a >= 6 ? 2 : 1;
+    const titulos = { 3: 'Incrível!', 2: 'Muito bem!', 1: 'Bom trabalho!' };
+    const elEstrelas = $('estrelas');
+    elEstrelas.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+      const s = document.createElement('span');
+      s.textContent = '⭐';
+      s.style.animationDelay = `${i * 180}ms`;
+      if (i >= estrelas) s.className = 'apagada';
+      elEstrelas.appendChild(s);
+    }
+    $('fim-titulo').textContent = titulos[estrelas];
+    $('fim-texto').textContent =
+      `Você completou as ${TOTAL_RODADAS} rodadas e acertou ${a} de primeira.` +
+      (estrelas < 3 ? ' Vamos treinar mais um pouco?' : '');
+    mostrarTela('fim');
+    falar(`${titulos[estrelas]} Você acertou ${a} de primeira.`);
+  }
+
+  function voltarMenu() {
+    clearTimeout(estado.timer);
+    calar();
+    mostrarTela('inicio');
+  }
+
+  // ---------- SELEÇÃO NA TELA INICIAL ----------
+  function marcarAtivo(seletor, botaoAtivo) {
+    document.querySelectorAll(seletor).forEach(b => {
+      const ativo = b === botaoAtivo;
+      b.classList.toggle('ativo', ativo);
+      b.setAttribute('aria-checked', ativo ? 'true' : 'false');
+    });
+  }
+
+  function aplicarPrefsNaTela() {
+    marcarAtivo('.modo', document.querySelector(`.modo[data-modo="${estado.modo}"]`));
+    marcarAtivo('.nivel', document.querySelector(`.nivel[data-nivel="${estado.nivel}"]`));
+    optVoz.checked = estado.voz;
+  }
+
+  document.querySelectorAll('.modo').forEach(b => b.addEventListener('click', () => {
+    estado.modo = b.dataset.modo;
+    marcarAtivo('.modo', b);
+    salvarPrefs();
+  }));
+
+  document.querySelectorAll('.nivel').forEach(b => b.addEventListener('click', () => {
+    estado.nivel = Number(b.dataset.nivel);
+    marcarAtivo('.nivel', b);
+    salvarPrefs();
+  }));
+
+  optVoz.addEventListener('change', () => {
+    estado.voz = optVoz.checked;
+    if (!estado.voz) calar();
+    salvarPrefs();
+  });
+
+  if (!('speechSynthesis' in window)) {
+    optVoz.disabled = true;
+    optVoz.parentElement.title = 'Este navegador não oferece leitura em voz alta.';
+    $('btn-ouvir').hidden = true;
+  }
+
+  $('btn-comecar').addEventListener('click', iniciarJogo);
+  $('btn-repetir').addEventListener('click', iniciarJogo);
+  $('btn-menu').addEventListener('click', voltarMenu);
+  $('btn-sair').addEventListener('click', voltarMenu);
+  $('btn-ouvir').addEventListener('click', () => {
+    const anterior = estado.voz;
+    estado.voz = true; // o botão sempre fala, mesmo com a leitura automática desligada
+    falar(estado.fala);
+    estado.voz = anterior;
+  });
+  btnRecontar.addEventListener('click', recontar);
+
+  carregarPrefs();
+  aplicarPrefsNaTela();
+</script>
+</body>
+</html>
